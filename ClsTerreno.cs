@@ -64,10 +64,6 @@ namespace IP3D
                     index[2 * j + 2 * i + 1] = (short)(i * width + j + 1);
                 }
             }
-
-
-
-
         }
 
         public void Draw(GraphicsDevice device)
