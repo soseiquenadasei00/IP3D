@@ -4,16 +4,18 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
+    
     public class Game1 : Game
     {
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
-
+        ClsTerreno terreno;
+        CameraLivre camera;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = false;
         }
 
         protected override void Initialize()
@@ -25,17 +27,19 @@ namespace IP3D
 
         protected override void LoadContent()
         {
+            
             _spriteBatch = new SpriteBatch(GraphicsDevice);
+            
 
-            // TODO: use this.Content to load your game content here
+            terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
+            camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
-            // TODO: Add your update logic here
+            camera.Update();
 
             base.Update(gameTime);
         }
@@ -43,8 +47,7 @@ namespace IP3D
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-
-            // TODO: Add your drawing code here
+            terreno.Draw(_graphics.GraphicsDevice,camera.view,camera.projection);
 
             base.Draw(gameTime);
         }
