@@ -7,8 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class 
-        CameraSurfaceFollow/*alterar nome da classe*/
+    class CameraSurfaceFollow
     {
         ClsTerreno terreno;
         public Matrix view, projection;
