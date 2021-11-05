@@ -24,10 +24,7 @@ public class ClsTerreno
     private int vertexCount;
     private float vScale;
     public float[,] alturas;
-    private float[] _heightMap;
-
-
-
+    
     public ClsTerreno(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
     {
         effect = new BasicEffect(device);
@@ -100,6 +97,10 @@ public class ClsTerreno
 
 
         #region Interpolation in the X axis
+        /*
+         * Map point = int , We need subtract my cam point - int point ( When close to the point the more relative weight it as)
+         * 0.1 > 0.9
+         */
         //weight of A
         float wA = Math.Abs(pontos[0].X - u);
         //weight of B
@@ -110,24 +111,11 @@ public class ClsTerreno
         float wD = Math.Abs(pontos[3].X - u);
         #endregion
         
-        #region Interpolation in the Z axis
-        //straight AB
-        float wAB = Math.Abs(pontos[0].Y - z);
-        //straight CD
-        float wCD = Math.Abs(pontos[2].Y - z);
-        #endregion
-
-
         yA = alturas[Math.Abs((int)pontos[0].X), Math.Abs((int)pontos[0].Y)];
         yB = alturas[Math.Abs((int)pontos[1].X), Math.Abs((int)pontos[1].Y)];
         yC = alturas[Math.Abs((int)pontos[2].X), Math.Abs((int)pontos[2].Y)];
         yD = alturas[Math.Abs((int)pontos[3].X), Math.Abs((int)pontos[3].Y)];
 
-
-        /* quick guide for the bi-interpolation
-         * Map point = int , We need subtract my cam point - int point ( When close to the point the more relative weight it as)
-         * 0.1 > 0.9
-         */
         #region Interpolation 
         //interpolation of A to B
         float yAB = (yA* wB) +
@@ -136,6 +124,14 @@ public class ClsTerreno
         //Interpolation between C and D
         float yCD = (yD * wC) +
             (yC * wD);
+        #endregion
+
+
+        #region Interpolation in the Z axis
+        //straight AB
+        float wAB = Math.Abs(pontos[0].Y - z);
+        //straight CD
+        float wCD = Math.Abs(pontos[2].Y - z);
         #endregion
 
         //Camera Height
@@ -153,7 +149,6 @@ public class ClsTerreno
 
         for (int i = 0; i < width - 1; i++)
         {
-            
             int indexOffset = height * 2;
             device.DrawIndexedPrimitives(PrimitiveType.TriangleStrip, 0,i* indexOffset, (height * 2) - 2);
         }

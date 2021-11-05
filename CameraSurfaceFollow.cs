@@ -7,7 +7,8 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class CameraLivre /*alterar nome da classe*/
+    class 
+        CameraSurfaceFollow/*alterar nome da classe*/
     {
         ClsTerreno terreno;
         public Matrix view, projection;
@@ -16,8 +17,7 @@ namespace IP3D
         int screenW, screenH;
         float offset = 1f;
         
-
-        public CameraLivre(GraphicsDevice device, ClsTerreno terreno) 
+        public CameraSurfaceFollow(GraphicsDevice device, ClsTerreno terreno) 
         {
             screenW = device.Viewport.Width;
             screenH = device.Viewport.Height;
@@ -34,7 +34,6 @@ namespace IP3D
             yaw = 0;
             pitch = 0;
         }
-
         public void Update() 
         {
 
@@ -49,9 +48,9 @@ namespace IP3D
             if (pitch < MathHelper.ToRadians(-85f)) pitch = -MathHelper.ToRadians(85f);
             Matrix rotacao;
             rotacao = Matrix.CreateFromYawPitchRoll(yaw, pitch, 0f); //yaw move for sides(Angle), pitch for up and down (angle), camera rotation
-            Vector3 direction; // aponta pra cima/baixo
+            Vector3 direction; 
             direction = Vector3.Transform(-Vector3.UnitZ, rotacao); //  move for up and  down 
-            Vector3 right; // movimenta pros lados
+            Vector3 right; 
             right = Vector3.Cross(direction, Vector3.UnitY);
             Vector3 up;
             up = Vector3.Cross(right, direction);
@@ -63,10 +62,9 @@ namespace IP3D
             if (kb.IsKeyDown(Keys.NumPad2)) position = position - direction * speed;
             if (kb.IsKeyDown(Keys.NumPad7)) position = position + up * speed;
             if (kb.IsKeyDown(Keys.NumPad1)) position = position - up * speed;
-            if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f);
+            if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f); // reset position 
             if (position.X > 0 & position.X < terreno.width - 1 & position.Z > 0 & position.Z < terreno.height - 1) position.Y = terreno.GetHeight(position.X, position.Z)+offset;
 
-            
             Vector3 target = position + direction;
             view = Matrix.CreateLookAt(position, target, up);
         }

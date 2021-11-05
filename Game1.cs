@@ -10,7 +10,7 @@ namespace IP3D
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         ClsTerreno terreno;
-        CameraLivre camera;
+        CameraSurfaceFollow camera;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -32,7 +32,7 @@ namespace IP3D
             
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
-            camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
+            camera = new CameraSurfaceFollow(_graphics.GraphicsDevice, terreno);
         }
 
         protected override void Update(GameTime gameTime)
