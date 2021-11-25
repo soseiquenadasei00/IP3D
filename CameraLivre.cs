@@ -7,7 +7,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class CameraSurfaceFollow
+    class CameraLivre
     {
         private ClsTerreno terreno;
         public Matrix view, projection;
@@ -16,7 +16,7 @@ namespace IP3D
         private int screenW, screenH;
         private float offset = 1f;
         
-        public CameraSurfaceFollow(GraphicsDevice device, ClsTerreno terreno) 
+        public CameraLivre(GraphicsDevice device, ClsTerreno terreno) 
         {
             screenW = device.Viewport.Width;
             screenH = device.Viewport.Height;

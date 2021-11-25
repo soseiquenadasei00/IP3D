@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -27,12 +28,16 @@ namespace IP3D
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
         private Matrix[] boneTransforms;
         private Matrix Scale;
+        private List<ModelBone> wheelNames;
 
         private float rotTower = 0;
         private float rotCanon = 0;
         private float rotTank = 0;
 
-        public ClsTank(GraphicsDevice device, Model model,ClsTerreno terreno, Vector3 position) {
+        
+
+
+        public ClsTank(GraphicsDevice device, Model model, ClsTerreno terreno, Vector3 position) {
             Scale = Matrix.CreateScale(0.01f);
             tankModel     = model;
             this.terreno  = terreno;
@@ -58,13 +63,22 @@ namespace IP3D
             rightSteerTranform = rightSteerBone.Transform;
 
             boneTransforms = new Matrix[tankModel.Bones.Count];
+            wheelNames = new List<ModelBone>();
+            wheelNames.Add(rightBackWheelBone);
+            wheelNames.Add(leftBackWheelBone); 
+            wheelNames.Add(rightFrontWheelBone);
+            wheelNames.Add(leftFrontWheelBone);
         }
- 
-        public void Update(GameTime gameTime, Keys[] controls)  {
-            
+
+        float wheelRotationAngle = 0;
+        float wheelRotationSpeed = 0;
+
+        public void Update(GameTime gameTime, Keys[] controls)
+        {
+
             KeyboardState state = Keyboard.GetState();
 
-            Matrix  rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
+            Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
@@ -79,37 +93,72 @@ namespace IP3D
 
             if (state.IsKeyDown(controls[2])) rotCanon -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon up
             if (state.IsKeyDown(controls[3])) rotCanon += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon down
-            if (rotCanon > 25)  rotCanon = 25;
+            if (rotCanon > 25) rotCanon = 25;
             if (rotCanon < -40) rotCanon = -40;
 
-            if (state.IsKeyDown(controls[4])) rotTank += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;//tank left
-            if (state.IsKeyDown(controls[5])) rotTank -= 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;//tank right
 
-            if (state.IsKeyDown(controls[6])) position += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds; //forward
-            if (state.IsKeyDown(controls[7])) position -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds; //backward
+            //tank left
+            if (state.IsKeyDown(controls[4]))
+            {
+                rotTank += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                wheelRotationAngle += 0.45f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (wheelRotationAngle > 0) wheelRotationAngle -= 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (wheelRotationAngle > 0.45f) wheelRotationAngle = 0.45f;
+
+            //tank right
+            if (state.IsKeyDown(controls[5]))
+            {
+                rotTank -= 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                wheelRotationAngle -= 0.45f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            }
+            else if (wheelRotationAngle < 0) wheelRotationAngle += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            if (wheelRotationAngle < -0.45f) wheelRotationAngle = -0.45f;
+
+
+            //forward
+            if (state.IsKeyDown(controls[6]))
+            {
+                position += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                wheelRotationSpeed += 10.0f;
+            }
+            if (wheelRotationSpeed > 10.0f) wheelRotationSpeed = 10.0f;
+
+
+            //backward
+            if (state.IsKeyDown(controls[7]))
+            {
+                position -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                wheelRotationSpeed -= 10.0f;
+            }
+            if (wheelRotationSpeed < -10.0f) wheelRotationSpeed = -10.0f;
+            if (!(state.IsKeyDown(controls[7]) || state.IsKeyDown(controls[6]))) wheelRotationSpeed = 0.0f;
+
 
 
             Matrix rotationCanon = Matrix.CreateRotationX(MathHelper.ToRadians(rotCanon)) * cannonTransform;
             Matrix rotationTower = Matrix.CreateRotationY(MathHelper.ToRadians(rotTower)) * turretTransform;
-            Matrix rotationSteer = Matrix.CreateRotationY(MathHelper.ToRadians(rotTank));
+            Matrix wheelSpeed = Matrix.CreateRotationX(MathHelper.ToRadians(wheelRotationSpeed));
+            Matrix wheelRotation = Matrix.CreateRotationY(wheelRotationAngle);
+            Console.WriteLine(wheelRotationSpeed) ;
+            turretBone.Transform = rotationTower;
+            cannonBone.Transform = rotationCanon;
+            leftSteerBone.Transform = wheelRotation  * leftSteerTranform;
+            rightSteerBone.Transform = wheelRotation  * rightSteerTranform;
 
-            turretBone.Transform     = rotationTower;
-            cannonBone.Transform     = rotationCanon;
-            leftSteerBone.Transform  = rotationSteer * leftSteerTranform;
-            rightSteerBone.Transform = rotationSteer * rightSteerTranform;
+            rightBackWheelBone.Transform = wheelSpeed * rightBackWheelBone.Transform;
+            rightFrontWheelBone.Transform = wheelSpeed * rightFrontWheelBone.Transform;
+            leftBackWheelBone.Transform = wheelSpeed * leftBackWheelBone.Transform;
+            leftFrontWheelBone.Transform = wheelSpeed * leftFrontWheelBone.Transform;
 
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
 
-
             position.Y = terreno.GetHeight(position.X, position.Z);
             Matrix translation = Matrix.CreateTranslation(position);
-
-
             tankModel.Root.Transform = Scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
-
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)

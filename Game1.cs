@@ -11,7 +11,7 @@ namespace IP3D
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
         private ClsTerreno terreno;
-        private CameraSurfaceFollow camera;
+        private CameraLivre camera;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -49,7 +49,7 @@ namespace IP3D
             
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
-            camera = new CameraSurfaceFollow(_graphics.GraphicsDevice, terreno);
+            camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
             tank1 = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42));
             tank2 = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69));
         }
@@ -62,7 +62,7 @@ namespace IP3D
 
             camera.Update();
             tank1.Update(gameTime, control1);
-            tank2.Update(gameTime, control2);
+           // tank2.Update(gameTime, control2);
             base.Update(gameTime);
         }
 
