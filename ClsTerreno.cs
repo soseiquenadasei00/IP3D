@@ -7,13 +7,14 @@ using System;
 namespace IP3D {
     public class ClsTerreno
     {
-
-        //normal stuff
-        private BasicEffect effect;
+        public int height;
+        public int width;
+        public float[,] alturas;
 
         //vertex
         private VertexBuffer vertexBuffer;
         private VertexPositionNormalTexture[] vertex;
+        private int vertexCount;
 
         //Index
         private IndexBuffer indexBuffer;
@@ -21,11 +22,9 @@ namespace IP3D {
         private int indexCount;
 
         //heightMap
-        public int height;
-        public int width;
-        private int vertexCount;
         private float vScale;
-        public float[,] alturas;
+
+        private BasicEffect effect;
 
         public ClsTerreno(GraphicsDevice device, Texture2D heightMap, Texture2D texture)
         {
@@ -61,6 +60,7 @@ namespace IP3D {
 
             CreateGeometry(device, heightMap);
         }
+
         #region SetNormals
         public void SetTopEdgeNormals()
         {
@@ -361,6 +361,20 @@ namespace IP3D {
             vertexBuffer.SetData<VertexPositionNormalTexture>(vertex);
             indexBuffer.SetData<short>(index);
         }
+
+        #region interpolações
+        /* quick guide for the bi-interpolation
+
+                wA      yAB   wB
+            a------------|---------b
+            |            | wAB     | wB 
+            |------------x----------
+            |            |         |
+            |            | wCD     | wD
+            c------------|---------d
+                wA       yCD   wB
+
+            */
         public float GetHeight(float u, float z)
         {
             float yA, yB, yC, yD;
@@ -440,24 +454,14 @@ namespace IP3D {
             float wCD = zInt + 1 - z;
             #endregion
 
-            /* quick guide for the bi-interpolation
-
-                 wA      yAB   wB
-             a------------|---------b
-             |            | wAB     | wB 
-             |------------x----------
-             |            |         |
-             |            | wCD     | wD
-             c------------|---------d
-                 wA       yCD   wB
-
-             */
+           
 
             //Camera Height
             Vector3 tankPitch = (yAB * wCD) + (yCD * wAB);
             return tankPitch;
         }
 
+        #endregion
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
             effect.View = view;

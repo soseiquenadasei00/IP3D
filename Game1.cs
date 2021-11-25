@@ -14,7 +14,7 @@ namespace IP3D
         private CameraSurfaceFollow camera;
 
 
-        /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
+        /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
         2 = CANNON UP
@@ -58,6 +58,8 @@ namespace IP3D
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+
+
             camera.Update();
             tank1.Update(gameTime, control1);
             tank2.Update(gameTime, control2);
