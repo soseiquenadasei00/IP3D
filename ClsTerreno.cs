@@ -58,7 +58,7 @@ namespace IP3D {
 
             indexBuffer = new IndexBuffer(device, typeof(short), indexCount, BufferUsage.None);
 
-            CreateGeometry(device, heightMap);
+            CreateGeometry(heightMap);
         }
 
         #region SetNormals
@@ -332,7 +332,7 @@ namespace IP3D {
         }
 
         #endregion
-        public void CreateGeometry(GraphicsDevice device, Texture2D heightMap)
+        public void CreateGeometry(Texture2D heightMap)
         {
 
             Color[] texelColors = new Color[vertexCount];

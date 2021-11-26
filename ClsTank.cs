@@ -28,16 +28,16 @@ namespace IP3D
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
         private Matrix[] boneTransforms;
         private Matrix Scale;
-        private List<ModelBone> wheelNames;
 
         private float rotTower = 0;
         private float rotCanon = 0;
         private float rotTank = 0;
 
-        
+        private float wheelRotationAngle = 0;
+        private float wheelRotationSpeed = 0;
 
 
-        public ClsTank(GraphicsDevice device, Model model, ClsTerreno terreno, Vector3 position) {
+        public ClsTank(Model model, ClsTerreno terreno, Vector3 position) {
             Scale = Matrix.CreateScale(0.01f);
             tankModel     = model;
             this.terreno  = terreno;
@@ -63,18 +63,11 @@ namespace IP3D
             rightSteerTranform = rightSteerBone.Transform;
 
             boneTransforms = new Matrix[tankModel.Bones.Count];
-            wheelNames = new List<ModelBone>();
-            wheelNames.Add(rightBackWheelBone);
-            wheelNames.Add(leftBackWheelBone); 
-            wheelNames.Add(rightFrontWheelBone);
-            wheelNames.Add(leftFrontWheelBone);
         }
 
-        float wheelRotationAngle = 0;
-        float wheelRotationSpeed = 0;
 
-        public void Update(GameTime gameTime, Keys[] controls)
-        {
+
+        public void Update(GameTime gameTime, Keys[] controls){
 
             KeyboardState state = Keyboard.GetState();
 
@@ -138,18 +131,26 @@ namespace IP3D
 
             Matrix rotationCanon = Matrix.CreateRotationX(MathHelper.ToRadians(rotCanon)) * cannonTransform;
             Matrix rotationTower = Matrix.CreateRotationY(MathHelper.ToRadians(rotTower)) * turretTransform;
-            Matrix wheelSpeed = Matrix.CreateRotationX(MathHelper.ToRadians(wheelRotationSpeed));
+            Matrix wheelSpeed    = Matrix.CreateRotationX(MathHelper.ToRadians(wheelRotationSpeed));
             Matrix wheelRotation = Matrix.CreateRotationY(wheelRotationAngle);
-            Console.WriteLine(wheelRotationSpeed) ;
+            
             turretBone.Transform = rotationTower;
             cannonBone.Transform = rotationCanon;
-            leftSteerBone.Transform = wheelRotation  * leftSteerTranform;
-            rightSteerBone.Transform = wheelRotation  * rightSteerTranform;
 
+
+            #region wheelAnim 
+            //turn
+            leftSteerBone.Transform = wheelRotation * leftSteerTranform;
+            rightSteerBone.Transform = wheelRotation * rightSteerTranform;
+
+            //rotate
             rightBackWheelBone.Transform = wheelSpeed * rightBackWheelBone.Transform;
             rightFrontWheelBone.Transform = wheelSpeed * rightFrontWheelBone.Transform;
             leftBackWheelBone.Transform = wheelSpeed * leftBackWheelBone.Transform;
             leftFrontWheelBone.Transform = wheelSpeed * leftFrontWheelBone.Transform;
+
+            #endregion
+
 
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;

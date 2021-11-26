@@ -50,8 +50,8 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
-            tank1 = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42));
-            tank2 = new ClsTank(_graphics.GraphicsDevice, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69));
+            tank1 = new ClsTank(Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42));
+            tank2 = new ClsTank(Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69));
         }
 
         protected override void Update(GameTime gameTime)
