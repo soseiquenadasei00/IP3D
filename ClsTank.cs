@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class ClsTank {
+    class ClsTank  : ClsGameObject{
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -17,8 +17,6 @@ namespace IP3D
         6 = TANK FORWARD
         7 = TANK BACKWARD
         */
-        public Vector3 position;
-
         private ClsTerreno terreno;
 
         //structure
@@ -27,8 +25,6 @@ namespace IP3D
                           rightFrontWheelBone, leftSteerBone, rightSteerBone, hatchBone;
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
         private Matrix[] boneTransforms;
-        private Matrix Scale;
-
         private float rotTower = 0;
         private float rotCanon = 0;
         private float rotTank = 0;
@@ -37,12 +33,12 @@ namespace IP3D
         private float wheelRotationSpeed = 0;
 
 
-        public ClsTank(Model model, ClsTerreno terreno, Vector3 position) {
-            Scale = Matrix.CreateScale(0.01f);
-            tankModel     = model;
-            this.terreno  = terreno;
-            this.position = position;
-
+        public ClsTank(Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name) : base(position, scale, Layer.blockable, radius, name){
+            this.scale     = scale;
+            this.tankModel = model;
+            this.terreno   = terreno;
+            this.position  = position;
+            this.name      = name;
 
             leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
             rightBackWheelBone  = tankModel.Bones["r_back_wheel_geo"];
@@ -108,11 +104,11 @@ namespace IP3D
             else if (wheelRotationAngle < 0) wheelRotationAngle += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
             if (wheelRotationAngle < -0.45f) wheelRotationAngle = -0.45f;
 
-
+            Vector3 futurePosition = position;
             //forward
             if (state.IsKeyDown(controls[6]))
             {
-                position += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                futurePosition += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 wheelRotationSpeed += 10.0f;
             }
             if (wheelRotationSpeed > 10.0f) wheelRotationSpeed = 10.0f;
@@ -121,7 +117,7 @@ namespace IP3D
             //backward
             if (state.IsKeyDown(controls[7]))
             {
-                position -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                futurePosition -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 wheelRotationSpeed -= 10.0f;
             }
             if (wheelRotationSpeed < -10.0f) wheelRotationSpeed = -10.0f;
@@ -157,11 +153,14 @@ namespace IP3D
             rotacao.Right = right;
 
             position.Y = terreno.GetHeight(position.X, position.Z);
+            if (ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition)) position = futurePosition;
             Matrix translation = Matrix.CreateTranslation(position);
-            tankModel.Root.Transform = Scale * rotacao * translation;
+            tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
+
+        
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
             foreach (ModelMesh mesh in tankModel.Meshes)
