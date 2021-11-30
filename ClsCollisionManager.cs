@@ -31,7 +31,7 @@ namespace IP3D {
 
         public bool CheckFutureCollision(ClsCircleCollider collider, Vector3 position){
             foreach(ClsGameObject go in objects) {
-                if (Vector3.Distance(position, go.position) < collider.radius + go.collider.radius) return true;
+                if (Vector3.Distance(position, go.position)  < collider.radius + go.collider.radius && go.name != collider.gameObject.name) return true;
             }
             return false;
         }

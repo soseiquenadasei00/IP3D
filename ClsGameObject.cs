@@ -20,6 +20,7 @@ namespace IP3D {
             this.scale = scale;
             this.name = name;
             collider = new ClsCircleCollider(this, position,radius);
+            ClsCollisionManager.instance.objects.Add(this);
         }
 
         public virtual void Update(){

@@ -24,7 +24,7 @@ namespace IP3D
         private ModelBone turretBone, cannonBone, leftBackWheelBone, rightBackWheelBone, leftFrontWheelBone,
                           rightFrontWheelBone, leftSteerBone, rightSteerBone, hatchBone;
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
-        private Matrix[] boneTransforms;
+        public Matrix[] boneTransforms;
         private float rotTower = 0;
         private float rotCanon = 0;
         private float rotTank = 0;
@@ -151,9 +151,14 @@ namespace IP3D
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
-
+            if (!ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition))
+            {
+                position = futurePosition;
+            }
             position.Y = terreno.GetHeight(position.X, position.Z);
-            if (ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition)) position = futurePosition;
+            
+            Console.WriteLine(ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition));
+
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);

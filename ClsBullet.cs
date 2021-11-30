@@ -25,7 +25,7 @@ namespace IP3D
 
         public Vector3 getVelocityandPosition(GameTime gameTime)
         {
-            Vector3 posBalaMundo = tank.dirBala;
+            //Vector3 posBalaMundo = tank.dirBala;
             Vector3 velocity = Vector3.Zero;
             Vector3 gravity = -Vector3.UnitY;
             Vector3 v0 = Vector3.Zero;
@@ -37,8 +37,8 @@ namespace IP3D
             velocity *= dirBala;
             v0 = velocity;
 
-            posicaoBullet = posBalaMundo + velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            posBalaMundo = posicaoBullet;
+            //posicaoBullet = posBalaMundo + velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            //posBalaMundo = posicaoBullet;
             return posicaoBullet;
         }
 
