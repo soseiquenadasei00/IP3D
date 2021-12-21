@@ -63,6 +63,7 @@ namespace IP3D
             boneTransforms = new Matrix[tankModel.Bones.Count];
 
             bullets.Add(new ClsBullet(this, game.Content.Load<Model>("bullet"), this.cannonTransform.Translation));
+
             bullets.Add(new ClsBullet(this, game.Content.Load<Model>("bullet"), this.cannonTransform.Translation));
         }
 
@@ -84,8 +85,8 @@ namespace IP3D
 
             #region Cannon/TowerControl
 
-            if (state.IsKeyDown(controls[0])) rotTower -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower left
-            if (state.IsKeyDown(controls[1])) rotTower += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower right
+            if (state.IsKeyDown(controls[0])) rotTower += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower left
+            if (state.IsKeyDown(controls[1])) rotTower -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower right
 
             if (state.IsKeyDown(controls[2])) rotCanon -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon up
             if (state.IsKeyDown(controls[3])) rotCanon += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon down
@@ -102,9 +103,9 @@ namespace IP3D
             #region BulletFire
             if (state.IsKeyDown(controls[8]))
             {
-                Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, rotCanon, 0.0f);  
+                Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotCanon, rotTower, 0.0f);  
                 Vector3 bulletDirection = Vector3.Transform(Vector3.UnitZ, bulletRot);
-                bullets[0].Fire(position, bulletDirection);
+                if (bullets[0].state != ClsBullet.BulletState.fired) bullets[0].Fire(position, bulletRot, cannonBone.Transform.Backward);
                 Console.WriteLine("fired");
             }
 

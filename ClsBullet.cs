@@ -19,8 +19,9 @@ namespace IP3D
         public float velocity = 0.5f;
         public Vector3 direction;
         public Matrix[] boneTransforms;
+        public Matrix rotation;
 
-        public ClsBullet(ClsTank tank, Model bullet, Vector3 position) : base(position, Matrix.CreateScale(1.0f), Layer.projectile, 0.5f, "bullet"){
+        public ClsBullet(ClsTank tank, Model bullet, Vector3 position) : base(position, Matrix.CreateScale(0.1f), Layer.projectile, 0.5f, "bullet"){
             this.tank = tank;
             this.mymeshbullet = bullet;
             state = BulletState.stored;
@@ -30,19 +31,20 @@ namespace IP3D
         public void Update(GameTime gameTime) {
             Vector3 gravity = new Vector3(0.0f, -9.8f, 0.0f);
 
-            Vector3 DeltaPosition = position + direction *( (float)gameTime.ElapsedGameTime.TotalSeconds / 5);
+            Vector3 DeltaPosition = position + direction  * (float)gameTime.ElapsedGameTime.TotalSeconds;
             Console.WriteLine(position);
             lastPosition = position;
             position = DeltaPosition;
             Matrix translation = Matrix.CreateTranslation(position);
-            mymeshbullet.Root.Transform = mymeshbullet.Root.Transform * translation;
+            mymeshbullet.Root.Transform = scale * rotation * translation;
             mymeshbullet.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
-        public void Fire(Vector3 position, Vector3 direction){
+        public void Fire(Vector3 position, Matrix rotation, Vector3 direction){
             state = BulletState.fired;
             this.position = position;
             this.direction = direction;
+            this.rotation = rotation;
         }
 
 
