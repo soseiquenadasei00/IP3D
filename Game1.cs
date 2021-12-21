@@ -26,9 +26,9 @@ namespace IP3D
         5 = TANK RIGHT
         6 = TANK FORWARD
         7 = TANK BACKWARD
-        */                        /*TOWER LEFT, TOWER RIGHT, CANNON UP, CANNON DOWN, TANK LEFT, TANK RIGHT, TANK FORWARD, TANK BACKWARD*/
-        private Keys[] control1 = { Keys.Left,  Keys.Right,  Keys.Up,   Keys.Down,   Keys.A,    Keys.D,     Keys.W,       Keys.S };
-        private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K };
+        */                        /*TOWER LEFT, TOWER RIGHT, CANNON UP, CANNON DOWN, TANK LEFT, TANK RIGHT, TANK FORWARD, TANK BACKWARD, TANK FIRE*/
+        private Keys[] control1 = { Keys.Left,  Keys.Right,  Keys.Up,   Keys.Down,   Keys.A,    Keys.D,     Keys.W,       Keys.S,        Keys.Space };
+        private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
         private ClsTank tank2;
         public Game1()
@@ -53,8 +53,8 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
-            tank1 = new ClsTank(Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
-            tank2 = new ClsTank(Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
+            tank1 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
+            tank2 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
         }
 
         protected override void Update(GameTime gameTime)
