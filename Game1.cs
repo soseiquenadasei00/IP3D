@@ -32,7 +32,6 @@ namespace IP3D
         private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
         private ClsTank tank2;
-        private ClsSkybox skybox;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -79,7 +78,6 @@ namespace IP3D
             tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, camera.projection, camera.view);
             //tank2.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
-            skybox.Draw(camera.view, camera.projection);
 
             base.Draw(gameTime);
         }
