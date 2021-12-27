@@ -31,6 +31,7 @@ namespace IP3D
         private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
         private ClsTank tank2;
+        private ClsSkybox skybox;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -55,6 +56,7 @@ namespace IP3D
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
             tank1 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
             //tank2 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
+            skybox = new ClsSkybox(Content.Load<Model>("NUVENS"), Matrix.CreateScale(100.0f));
         }
 
         protected override void Update(GameTime gameTime)
@@ -75,6 +77,7 @@ namespace IP3D
             terreno.Draw(_graphics.GraphicsDevice,camera.view,camera.projection);
             tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
             //tank2.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
+            skybox.Draw(camera.view, camera.projection);
 
             base.Draw(gameTime);
         }
