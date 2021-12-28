@@ -33,15 +33,21 @@ namespace IP3D
         private float wheelRotationSpeed = 0;
 
         private List<ClsBullet> bullets = new List<ClsBullet>();
+        private int cannonPower = 100000;
+        private GraphicsDevice device;
+        private float reloadTime = 2.0f;
+        private float lastShotTime;
+        private bool canFire;
 
 
-        public ClsTank(Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name) : base(position, scale, Layer.blockable, radius, name){
+        public ClsTank(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name) : base(position, scale, Layer.blockable, radius, name){
             this.scale     = scale;
             this.tankModel = model;
             this.terreno   = terreno;
             this.position  = position;
             this.name      = name;
             this.game      = game1;
+            this.device    = device;
             leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
             rightBackWheelBone  = tankModel.Bones["r_back_wheel_geo"];
 
@@ -61,10 +67,6 @@ namespace IP3D
             rightSteerTranform = rightSteerBone.Transform;
 
             boneTransforms = new Matrix[tankModel.Bones.Count];
-
-            bullets.Add(new ClsBullet(this, game.Content.Load<Model>("bullet"), this.cannonTransform.Translation, 1000f ));
-
-            bullets.Add(new ClsBullet(this, game.Content.Load<Model>("bullet"), this.cannonTransform.Translation, 100f));
         }
 
 
@@ -98,27 +100,7 @@ namespace IP3D
             Matrix rotationTower = Matrix.CreateRotationY(MathHelper.ToRadians(rotTower)) * turretTransform;
             turretBone.Transform = rotationTower;
             cannonBone.Transform = rotationCanon;
-            #endregion
-
-            #region BulletFire
-            if (state.IsKeyDown(controls[8]))
-            {
-                Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, -rotCanon, 0.0f);  
-                if (bullets[0].state != ClsBullet.BulletState.fired) bullets[0].Fire(Vector3.Transform(cannonTransform.Translation,tankModel.Root.Transform), bulletRot, cannonBone.Transform.Backward);
-                Console.WriteLine("fired");
-                
-
-            }
-
-            foreach (ClsBullet bullet in bullets)
-            {
-                if (bullet.state == ClsBullet.BulletState.fired)
-                {
-                    bullet.Update(gameTime);
-                }
-            }
-
-            #endregion
+            #endregion  
 
             #region TankControl
             //tank left
@@ -180,18 +162,61 @@ namespace IP3D
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
+
+            //collision
             if (!ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition))
             {
                 position = futurePosition;
             }
             position.Y = terreno.GetHeight(position.X, position.Z);
-            
+
+            //fire
+            if (canFire && state.IsKeyDown(controls[8]))
+            {
+                Fire();
+                canFire = false;
+                lastShotTime = (float)gameTime.TotalGameTime.TotalSeconds;
+            }
+            for (int i = 0; i < bullets.Count; i++)
+            {
+                if (bullets[i].state != ClsBullet.BulletState.stored)
+                {
+                    bullets[i].Update(gameTime);
+                }
+                if (bullets[i].state == ClsBullet.BulletState.travelling)
+                {
+                    if (   bullets[i].position.X <= 0 
+                        || bullets[i].position.Z <= 0
+                        || bullets[i].position.X >= terreno.width
+                        || bullets[i].position.Z >= terreno.height
+                        || terreno.GetHeight(bullets[i].position.X,bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
+                    
+                }
+            }
+            if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
+
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
+        public void Fire()
+        {
+            Vector3 cannonPosition = Vector3.Transform(cannonTransform.Translation, tankModel.Root.Transform);
+            ClsBullet newBullet = new ClsBullet(device, this, cannonPosition, cannonPower);
+            bullets.Add(newBullet);
 
+            Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, -rotCanon, 0.0f);
+            Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, bulletRot);
+            Vector3 normal = terreno.GetNormals(position.X, position.Z);
+            normal.Normalize();
+            Vector3 right = Vector3.Cross(direcao, normal);
+            right.Normalize();
+            Vector3 direcaoCorreta = Vector3.Cross(normal, right);
+            direcaoCorreta.Normalize();
+            newBullet.Fire(direcaoCorreta);
+           
+        }
         
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
@@ -211,7 +236,7 @@ namespace IP3D
 
             foreach (ClsBullet bullet in bullets)
             {
-                if (bullet.state == ClsBullet.BulletState.fired) bullet.Draw(device, view, projection);
+                if (bullet.state != ClsBullet.BulletState.stored) bullet.Draw(device, view, projection);
             }
         }
     }

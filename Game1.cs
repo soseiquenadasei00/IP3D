@@ -54,7 +54,7 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
-            tank1 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
+            tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
             //tank2 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
             systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
         }

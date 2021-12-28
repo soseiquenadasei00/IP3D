@@ -6,7 +6,7 @@ using System.Text;
 
 namespace IP3D
 {
-    public class Sphere
+    public class ClsSphere
     {
         private BasicEffect effect;
 
@@ -24,7 +24,7 @@ namespace IP3D
         private int nVert, nIndex;
         private Vector3 position;
 
-        public Sphere(GraphicsDevice device, Vector3 position, Color color, float radius)
+        public ClsSphere(GraphicsDevice device, Vector3 position, Color color, float radius)
         {
             this.position = position;
             this.radius = radius;
@@ -41,11 +41,9 @@ namespace IP3D
             effect.VertexColorEnabled = true;
         }
 
-        public void Update()
+        public void Update(Vector3 position)
         {
-            if (position.X < 20) position.X--;
-
-            Console.WriteLine(position.X);
+            this.position = position;
         }
         private void CreateGeometry(Color color)
         {
