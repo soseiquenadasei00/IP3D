@@ -54,18 +54,10 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
-
-            tankboid = new ClsTankBoid(_graphics.GraphicsDevice, 
-                                        this, 
-                                        Content.Load<Model>(@"tank\tank"), 
-                                        terreno,
-                                        new Vector3(69, 0, 69), 
-                                        Matrix.CreateScale(0.008f), 
-                                        2.68f, 
-                                        "tank2");
-
-            tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
-            tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
+            tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, 
+                new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
+            tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, 
+                new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
             systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
         }
 
@@ -76,7 +68,6 @@ namespace IP3D
 
             systemparticula.Update(gameTime);
             camera.Update();
-            
             tankboid.Update(gameTime);
             tank1.Update(gameTime, control1);
             base.Update(gameTime);
@@ -88,7 +79,7 @@ namespace IP3D
             terreno.Draw(_graphics.GraphicsDevice,camera.view,camera.projection);
             tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, camera.projection, camera.view);
-           tankboid.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
+            tankboid.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
 
             base.Draw(gameTime);
         }

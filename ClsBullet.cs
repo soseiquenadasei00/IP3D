@@ -47,11 +47,7 @@ namespace IP3D
             lastPosition = position;
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-
-
-
-            Console.WriteLine(position);
-
+            Console.WriteLine(CheckCollisionWithTank());
 
             sphere.Update(position);
         }
@@ -66,15 +62,27 @@ namespace IP3D
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
-            Console.WriteLine(position);
             sphere.Draw(device, view, projection);
         }
 
 
-        //public bool CheckCollisionWithTank()
-        //{
+        public bool CheckCollisionWithTank()
+        {
+            foreach (ClsGameObject go in ClsCollisionManager.instance.objects)
+            {
+                if (go.name == "tankboid")
+                {
+                    Console.WriteLine(Vector3.Distance(velocity, go.position));
+                    //tanque esta para tras da bala
+                    if (Vector3.Distance(velocity, go.position) < 0) return false;
+                    
+                    else return true;
 
 
-        //}
+
+                }
+            }
+            return false;
+        }
     }
 }

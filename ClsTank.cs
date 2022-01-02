@@ -174,7 +174,7 @@ namespace IP3D
             //fire
             if (canFire && state.IsKeyDown(controls[8]))
             {
-                Fire();
+                Fire(direcaoCorreta);
                 canFire = false;
                 lastShotTime = (float)gameTime.TotalGameTime.TotalSeconds;
             }
@@ -203,14 +203,19 @@ namespace IP3D
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
-        public void Fire()
+        public void Fire(Vector3 direcaoCorreta)
         {
-            Vector3 cannonPosition = Vector3.Transform(this.cannonTransform.Translation, this.tankModel.Root.Transform);
-            cannonPosition.Y = terreno.GetHeight(cannonPosition.X, cannonPosition.Z);
+            Vector3 cannonPosition = Vector3.Transform(cannonTransform.Translation, tankModel.Root.Transform);
+            cannonPosition.Y = terreno.GetHeight(cannonPosition.X, cannonPosition.Z) + 2;  //2 works well as an offset for the cannon height
+
             ClsBullet newBullet = new ClsBullet(device, this, cannonPosition, cannonPower);
             bullets.Add(newBullet);
 
-            Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, -rotCanon, 0.0f);
+
+
+
+            
+            Matrix bulletRot = Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotTower), MathHelper.ToRadians(-rotCanon), 0.0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, bulletRot);
             direcao.Normalize();
 

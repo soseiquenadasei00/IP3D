@@ -69,12 +69,8 @@ namespace IP3D
             boneTransforms = new Matrix[tankModel.Bones.Count];
         }
 
-
-
-        public void Update(GameTime gameTime){
-
-            KeyboardState state = Keyboard.GetState();
-
+        public void Update(GameTime gameTime)
+        {
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
@@ -85,139 +81,19 @@ namespace IP3D
             Vector3 direcaoCorreta = Vector3.Cross(normal, right);
             direcaoCorreta.Normalize();
 
-            #region Cannon/TowerControl
-
-            //if (state.IsKeyDown(controls[0])) rotTower += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower left
-            //if (state.IsKeyDown(controls[1])) rotTower -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds; //tower right
-
-            //if (state.IsKeyDown(controls[2])) rotCanon -= 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon up
-            //if (state.IsKeyDown(controls[3])) rotCanon += 45 * (float)gameTime.ElapsedGameTime.TotalSeconds;//cannon down
-            //if (rotCanon > 25) rotCanon = 25;
-            //if (rotCanon < -40) rotCanon = -40;
-
-
-            Matrix rotationCanon = Matrix.CreateRotationX(MathHelper.ToRadians(rotCanon)) * cannonTransform;
-            Matrix rotationTower = Matrix.CreateRotationY(MathHelper.ToRadians(rotTower)) * turretTransform;
-            turretBone.Transform = rotationTower;
-            cannonBone.Transform = rotationCanon;
-            #endregion  
-
-            #region TankControl
-            //tank left
-            //if (state.IsKeyDown(controls[4]))
-            //{
-            //    rotTank += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //    wheelRotationAngle += 0.45f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //}
-            //else if (wheelRotationAngle > 0) wheelRotationAngle -= 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //if (wheelRotationAngle > 0.45f) wheelRotationAngle = 0.45f;
-
-            ////tank right
-            //if (state.IsKeyDown(controls[5]))
-            //{
-            //    rotTank -= 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //    wheelRotationAngle -= 0.45f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //}
-            //else if (wheelRotationAngle < 0) wheelRotationAngle += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //if (wheelRotationAngle < -0.45f) wheelRotationAngle = -0.45f;
-
-            //Vector3 futurePosition = position;
-            ////forward
-            //if (state.IsKeyDown(controls[6]))
-            //{
-            //    futurePosition += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //    wheelRotationSpeed += 10.0f;
-            //}
-            //if (wheelRotationSpeed > 10.0f) wheelRotationSpeed = 10.0f;
-
-
-            ////backward
-            //if (state.IsKeyDown(controls[7]))
-            //{
-            //    futurePosition -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            //    wheelRotationSpeed -= 10.0f;
-            //}
-            //if (wheelRotationSpeed < -10.0f) wheelRotationSpeed = -10.0f;
-            //if (!(state.IsKeyDown(controls[7]) || state.IsKeyDown(controls[6]))) wheelRotationSpeed = 0.0f;
-
-            #endregion
-
-            #region wheelAnim 
-            Matrix wheelSpeed = Matrix.CreateRotationX(MathHelper.ToRadians(wheelRotationSpeed));
-            Matrix wheelRotation = Matrix.CreateRotationY(wheelRotationAngle);
-
-            //turn
-            leftSteerBone.Transform = wheelRotation * leftSteerTranform;
-            rightSteerBone.Transform = wheelRotation * rightSteerTranform;
-
-            //rotate
-            rightBackWheelBone.Transform = wheelSpeed * rightBackWheelBone.Transform;
-            rightFrontWheelBone.Transform = wheelSpeed * rightFrontWheelBone.Transform;
-            leftBackWheelBone.Transform = wheelSpeed * leftBackWheelBone.Transform;
-            leftFrontWheelBone.Transform = wheelSpeed * leftFrontWheelBone.Transform;
-
-            #endregion
 
 
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
 
-            //collision
-            //if (!ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition))
-            //{
-            //    position = futurePosition;
-            //}
-            //position.Y = terreno.GetHeight(position.X, position.Z);
-
-            #region Bullets
-            //fire
-            //if (canFire && state.IsKeyDown(controls[8]))
-            //{
-            //    Fire();
-            //    canFire = false;
-            //    lastShotTime = (float)gameTime.TotalGameTime.TotalSeconds;
-            //}
-            for (int i = 0; i < bullets.Count; i++)
-            {
-                if (bullets[i].state != ClsBullet.BulletState.stored)
-                {
-                    bullets[i].Update(gameTime);
-                }
-                if (bullets[i].state == ClsBullet.BulletState.travelling)
-                {
-                    if (   bullets[i].position.X <= 0 
-                        || bullets[i].position.Z <= 0
-                        || bullets[i].position.X >= terreno.width  - 1
-                        || bullets[i].position.Z >= terreno.height - 1
-                        || terreno.GetHeight(bullets[i].position.X,bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
-                    
-                }
-            }
-            if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
-
-            #endregion
+            position.Y = terreno.GetHeight(position.X, position.Y);
 
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
-        public void Fire()
-        {
-            Vector3 cannonPosition = Vector3.Transform(cannonTransform.Translation, tankModel.Root.Transform);
-
-            Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, -rotCanon, 0.0f);
-            Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, bulletRot);
-            Vector3 normal = terreno.GetNormals(position.X, position.Z);
-            normal.Normalize();
-            Vector3 right = Vector3.Cross(direcao, normal);
-            right.Normalize();
-            Vector3 direcaoCorreta = Vector3.Cross(normal, right);
-            direcaoCorreta.Normalize();
-           
-        }
-        
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
             foreach (ModelMesh mesh in tankModel.Meshes)
