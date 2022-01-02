@@ -23,12 +23,13 @@ namespace IP3D
         private int massa = 45;
         private ClsSphere sphere;
 
-        public ClsBullet(GraphicsDevice device, ClsTank tank, Vector3 position, float impulsoInicial) : base(position, Matrix.CreateScale(1.0f), Layer.projectile, 0.5f, "bullet"){
+        public ClsBullet(GraphicsDevice device, ClsTank tank, Vector3 position, float impulsoInicial) : base(position, Matrix.CreateScale(1.0f), Layer.projectile, 1.0f, "bullet"){
             this.tank = tank;
             this.impulsoInicial = impulsoInicial;
             this.position = position;
+            this.layer = Layer.projectile;
             state = BulletState.stored;
-            sphere = new ClsSphere(device, position, Color.Black, 0.5f);
+            sphere = new ClsSphere(device, position, Color.Black, 1.0f);
         }
         //apenas 1 aceleracao == gravidade` 
         //forca = velocidade inicial em newton * direction
@@ -45,6 +46,13 @@ namespace IP3D
             velocity += aceleracao * (float)gameTime.ElapsedGameTime.TotalSeconds;
             lastPosition = position;
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+
+
+            Console.WriteLine(position);
+
+
             sphere.Update(position);
         }
 
@@ -61,5 +69,12 @@ namespace IP3D
             Console.WriteLine(position);
             sphere.Draw(device, view, projection);
         }
+
+
+        //public bool CheckCollisionWithTank()
+        //{
+
+
+        //}
     }
 }

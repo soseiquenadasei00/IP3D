@@ -170,6 +170,7 @@ namespace IP3D
             }
             position.Y = terreno.GetHeight(position.X, position.Z);
 
+            #region Bullets
             //fire
             if (canFire && state.IsKeyDown(controls[8]))
             {
@@ -185,15 +186,17 @@ namespace IP3D
                 }
                 if (bullets[i].state == ClsBullet.BulletState.travelling)
                 {
-                    if (   bullets[i].position.X <= 0 
+                    if (bullets[i].position.X <= 0
                         || bullets[i].position.Z <= 0
-                        || bullets[i].position.X >= terreno.width
-                        || bullets[i].position.Z >= terreno.height
-                        || terreno.GetHeight(bullets[i].position.X,bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
+                        || bullets[i].position.X >= terreno.width - 1
+                        || bullets[i].position.Z >= terreno.height - 1
+                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y)  bullets.RemoveAt(i);
                     
                 }
             }
             if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
+
+            #endregion
 
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
@@ -202,19 +205,16 @@ namespace IP3D
 
         public void Fire()
         {
-            Vector3 cannonPosition = Vector3.Transform(cannonTransform.Translation, tankModel.Root.Transform);
+            Vector3 cannonPosition = Vector3.Transform(this.cannonTransform.Translation, this.tankModel.Root.Transform);
+            cannonPosition.Y = terreno.GetHeight(cannonPosition.X, cannonPosition.Z);
             ClsBullet newBullet = new ClsBullet(device, this, cannonPosition, cannonPower);
             bullets.Add(newBullet);
 
             Matrix bulletRot = Matrix.CreateFromYawPitchRoll(rotTower, -rotCanon, 0.0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, bulletRot);
-            Vector3 normal = terreno.GetNormals(position.X, position.Z);
-            normal.Normalize();
-            Vector3 right = Vector3.Cross(direcao, normal);
-            right.Normalize();
-            Vector3 direcaoCorreta = Vector3.Cross(normal, right);
-            direcaoCorreta.Normalize();
-            newBullet.Fire(direcaoCorreta);
+            direcao.Normalize();
+
+            newBullet.Fire(direcao);
            
         }
         

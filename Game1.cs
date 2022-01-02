@@ -31,7 +31,7 @@ namespace IP3D
         private Keys[] control1 = { Keys.Left,  Keys.Right,  Keys.Up,   Keys.Down,   Keys.A,    Keys.D,     Keys.W,       Keys.S,        Keys.Space };
         private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
-        private ClsTank tank2;
+        private ClsTankBoid tankboid;
         public Game1()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -54,8 +54,18 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
             camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
+
+            tankboid = new ClsTankBoid(_graphics.GraphicsDevice, 
+                                        this, 
+                                        Content.Load<Model>(@"tank\tank"), 
+                                        terreno,
+                                        new Vector3(69, 0, 69), 
+                                        Matrix.CreateScale(0.008f), 
+                                        2.68f, 
+                                        "tank2");
+
             tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
-            //tank2 = new ClsTank(this, Content.Load<Model>(@"tank\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
+            tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tank2");
             systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
         }
 
@@ -66,8 +76,9 @@ namespace IP3D
 
             systemparticula.Update(gameTime);
             camera.Update();
+            
+            tankboid.Update(gameTime);
             tank1.Update(gameTime, control1);
-           // tank2.Update(gameTime, control2);
             base.Update(gameTime);
         }
 
@@ -77,7 +88,7 @@ namespace IP3D
             terreno.Draw(_graphics.GraphicsDevice,camera.view,camera.projection);
             tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, camera.projection, camera.view);
-            //tank2.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
+           tankboid.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
 
             base.Draw(gameTime);
         }

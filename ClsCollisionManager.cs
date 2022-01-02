@@ -15,7 +15,6 @@ namespace IP3D {
         public ClsCollisionManager(){
             instance = this;
             objects = new List<ClsGameObject>();
-
         }
 
 
@@ -29,9 +28,20 @@ namespace IP3D {
             return collisionList;
         }
 
+        public ClsGameObject ReturnCollidedObject(ClsCircleCollider collider)
+        {
+            foreach (ClsGameObject go in objects)
+            {
+                if (Vector3.Distance(collider.center, go.position) < collider.radius + go.collider.radius) return go;                
+            }
+            return null;
+        }
+
         public bool CheckFutureCollision(ClsCircleCollider collider, Vector3 position){
             foreach(ClsGameObject go in objects) {
-                if (Vector3.Distance(position, go.position)  < collider.radius + go.collider.radius && go.name != collider.gameObject.name) return true;
+                if (Vector3.Distance(position, go.position)  < collider.radius + go.collider.radius 
+                    && go.name != collider.gameObject.name  &&
+                    go.layer == ClsGameObject.Layer.blockable) return true;
             }
             return false;
         }

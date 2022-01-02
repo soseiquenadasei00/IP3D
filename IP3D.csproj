@@ -46,6 +46,21 @@
     <None Update="Content\Skybox\posz.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Content\tank2\engine_diff_tex.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\tank2\engine_diff_tex_0.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\tank2\tank.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\tank2\turret_alt_diff_tex.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Content\tank2\turret_alt_diff_tex_0.xnb">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Content\tank\engine_diff_tex.xnb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
