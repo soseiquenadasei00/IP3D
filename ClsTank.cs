@@ -170,6 +170,10 @@ namespace IP3D
             }
             position.Y = terreno.GetHeight(position.X, position.Z);
 
+            Matrix translation = Matrix.CreateTranslation(position);
+            tankModel.Root.Transform = scale * rotacao * translation;
+            tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
+
             #region Bullets
             //fire
             if (canFire && state.IsKeyDown(controls[8]))
@@ -190,36 +194,24 @@ namespace IP3D
                         || bullets[i].position.Z <= 0
                         || bullets[i].position.X >= terreno.width - 1
                         || bullets[i].position.Z >= terreno.height - 1
-                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y)  bullets.RemoveAt(i);
-                    
+                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
+
                 }
             }
             if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
 
             #endregion
-
-            Matrix translation = Matrix.CreateTranslation(position);
-            tankModel.Root.Transform = scale * rotacao * translation;
-            tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
         public void Fire(Vector3 direcaoCorreta)
         {
-            Vector3 cannonPosition = Vector3.Transform(cannonTransform.Translation, tankModel.Root.Transform);
-            cannonPosition.Y = terreno.GetHeight(cannonPosition.X, cannonPosition.Z) + 2;  //2 works well as an offset for the cannon height
-
-            ClsBullet newBullet = new ClsBullet(device, this, cannonPosition, cannonPower);
+            Vector3 posCanhaoLocal = Vector3.Zero;
+            Vector3 posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
+            ClsBullet newBullet = new ClsBullet(device, this, posCanhaoMundo, cannonPower);
             bullets.Add(newBullet);
-
-
-
-
-            
-            Matrix bulletRot = Matrix.CreateFromYawPitchRoll(MathHelper.ToRadians(rotTower), MathHelper.ToRadians(-rotCanon), 0.0f);
-            Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, bulletRot);
-            direcao.Normalize();
-
-            newBullet.Fire(direcao);
+            Vector3 dirCanhaoMundo = boneTransforms[10].Backward;
+            dirCanhaoMundo.Normalize();
+            newBullet.Fire(dirCanhaoMundo);
            
         }
         
