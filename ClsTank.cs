@@ -203,7 +203,8 @@ namespace IP3D
                         || bullets[i].position.Z <= 0
                         || bullets[i].position.X >= terreno.width - 1
                         || bullets[i].position.Z >= terreno.height - 1
-                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
+                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y
+                        || bullets[i].collided) bullets.RemoveAt(i);
 
                 }
             }

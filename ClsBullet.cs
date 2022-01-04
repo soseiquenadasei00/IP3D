@@ -16,6 +16,7 @@ namespace IP3D
         public Vector3 direction;
         public Vector3 position;
         public Vector3 velocity;
+        public bool collided = false;
 
         //physics
         private float impulsoInicial;
@@ -47,7 +48,11 @@ namespace IP3D
             lastPosition = position;
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
             sphere.Update(position);
-            if (ClsCollisionManager.instance.CheckBulletCollision()) ClsCollisionManager.instance.tankboid.lifes--;
+            if (ClsCollisionManager.instance.CheckBulletCollision())
+            {
+                ClsCollisionManager.instance.tankboid.lifes--;
+                collided = true;
+            }
         }
 
         public void Fire(Vector3 direction){
