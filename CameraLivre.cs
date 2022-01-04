@@ -7,12 +7,11 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class CameraLivre
+    public class CameraLivre
     {
         private ClsTerreno terreno;
         public Matrix view, projection;
-        public Vector3 position;
-        private float yaw, pitch;
+        public float yaw, pitch;
         private int screenW, screenH;
         private float offset = 1f;
         
@@ -29,15 +28,10 @@ namespace IP3D
             aspectRatio,
             0.1f,
             100.0f);
-            position = new Vector3(64f, 20f, 64f); /*Start camera position*/
-            yaw = 0;
-            pitch = 0;
         }
-        public void Update() 
+        public Vector3 Update(KeyboardState kb, MouseState ms, Vector3 position, float yaw, float pitch) 
         {
-
-            MouseState ms = Mouse.GetState();
-
+           
             Mouse.SetPosition(screenW / 2, screenH / 2);
             Vector2 mouseOffSet = ms.Position.ToVector2() - new Vector2(screenW / 2, screenH / 2);
             float radianosPorPixel = MathHelper.ToRadians(0.5f);
@@ -53,7 +47,6 @@ namespace IP3D
             right = Vector3.Cross(direction, Vector3.UnitY);
             Vector3 up;
             up = Vector3.Cross(right, direction);
-            KeyboardState kb = Keyboard.GetState();
             float speed = 0.5f;
             if (kb.IsKeyDown(Keys.NumPad4)) position = position - right * speed;
             if (kb.IsKeyDown(Keys.NumPad6)) position = position + right * speed;
@@ -66,6 +59,9 @@ namespace IP3D
 
             Vector3 target = position + direction;
             view = Matrix.CreateLookAt(position, target, up);
+            this.yaw = yaw;
+            this.pitch = pitch;
+            return position;
         }
    }
 }
