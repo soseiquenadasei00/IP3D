@@ -37,7 +37,7 @@ namespace IP3D
         private float wheelRotationAngle = 0;
         private float wheelRotationSpeed = 0;
 
-        private List<ClsBullet> bullets = new List<ClsBullet>();
+        private List<ClsBullet> bullets;
         private int cannonPower = 100000;
         private GraphicsDevice device;
         private float reloadTime = 2.0f;
@@ -53,6 +53,7 @@ namespace IP3D
             this.position  = position;
             this.game      = game1;
             this.device    = device;
+            this.bullets   = ClsCollisionManager.instance.bullets;
             collider = new ClsCircleCollider(position, radius);
             ClsCollisionManager.instance.tank = this;
 

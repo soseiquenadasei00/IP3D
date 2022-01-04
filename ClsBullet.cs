@@ -12,20 +12,23 @@ namespace IP3D
         public enum BulletState { fired, stored, travelling }
         public BulletState state;
         public Vector3 lastPosition;
+        public float radius;
+        public Vector3 direction;
+        public Vector3 position;
+        public Vector3 velocity;
 
         //physics
         private float impulsoInicial;
-        private Vector3 forcaInicial;
-        public Vector3 position;
-        private Vector3 velocity;
-        private Vector3 direction;
+        private Vector3 forcaInicial;        
         private int massa = 45;
         private ClsSphere sphere;
+        
         public ClsBullet(GraphicsDevice device, Vector3 position, float impulsoInicial) { 
             this.impulsoInicial = impulsoInicial;
             this.position = position;
             state = BulletState.stored;
             ClsCollisionManager.instance.bullets.Add(this);
+            radius = 0.5f;
             sphere = new ClsSphere(device, position, Color.Black, 0.5f);
         }
         //apenas 1 aceleracao == gravidade` 
@@ -44,6 +47,7 @@ namespace IP3D
             lastPosition = position;
             position += velocity * (float)gameTime.ElapsedGameTime.TotalSeconds;
             sphere.Update(position);
+            if (ClsCollisionManager.instance.CheckBulletCollision()) ClsCollisionManager.instance.tankboid.lifes--;
         }
 
         public void Fire(Vector3 direction){

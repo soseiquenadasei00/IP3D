@@ -10,6 +10,7 @@ namespace IP3D
 
         public Vector3 position;
         public ClsCircleCollider collider;
+        public int lifes = 3;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -42,6 +43,7 @@ namespace IP3D
         private float reloadTime = 2.0f;
         private float lastShotTime;
         private bool canFire;
+        
         
 
 
@@ -99,27 +101,32 @@ namespace IP3D
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
+
+            
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
-            foreach (ModelMesh mesh in tankModel.Meshes)
+            if (lifes > 0)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMesh mesh in tankModel.Meshes)
                 {
-                    effect.World = boneTransforms[mesh.ParentBone.Index];
-                    effect.View = view;
-                    effect.Projection = projection;
-                    effect.EnableDefaultLighting();
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.World = boneTransforms[mesh.ParentBone.Index];
+                        effect.View = view;
+                        effect.Projection = projection;
+                        effect.EnableDefaultLighting();
+                    }
+                    // Draw each mesh of the model
+                    mesh.Draw();
                 }
-                // Draw each mesh of the model
-                mesh.Draw();
-            }
 
 
-            foreach (ClsBullet bullet in bullets)
-            {
-                if (bullet.state != ClsBullet.BulletState.stored) bullet.Draw(device, view, projection);
+                foreach (ClsBullet bullet in bullets)
+                {
+                    if (bullet.state != ClsBullet.BulletState.stored) bullet.Draw(device, view, projection);
+                }
             }
         }
     }
