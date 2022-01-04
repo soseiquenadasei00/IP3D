@@ -14,14 +14,14 @@ namespace IP3D
         private BasicEffect effect;
         private float particlesPerSec = 50;
         private ClsTank tank;
-        ClsSphere sphere;
+  
         GraphicsDevice device;
         ClsTerreno terreno;
 
         // Sistema de particulas, lista de particulas 
         public SystemParticulaDust(GraphicsDevice device, ClsTank tank,ClsTerreno terreno)
         {
-            r = new System.Random(1);
+            r = new Random(1);
             this.tank = tank;
             this.device = device;
             particulas = new List<ClsParticulaDust>();
@@ -34,16 +34,9 @@ namespace IP3D
 
         public void Update(GameTime gametime)
         {
-            Generate((int)(Math.Round(particlesPerSec * (float)gametime.ElapsedGameTime.TotalSeconds)));
-            killParticula(gametime);
-            for (int i = 0; i < particulas.Count; i++)
-            {
-                float desvio = (float)r.NextDouble() * 0.5f;
-                Vector3 vel = particulas[i].vel;
-                vel.Normalize();
-                vel *= desvio;
-
-            }
+            if (tank.actual== ClsTank.tankState.move) Generate((int)(Math.Round(particlesPerSec * (float)gametime.ElapsedGameTime.TotalSeconds)));
+             killParticula(gametime);
+           
         }
 
         private void Generate(int particlesQnt)
@@ -79,7 +72,7 @@ namespace IP3D
             Vector3 offset = new Vector3(0f, 0f, -0.15f);
 
             pos = offset + posRodaMundo + raio * (float)r.NextDouble() * new Vector3(MathF.Cos(randomAngle), 0, MathF.Sin(randomAngle));
-            vel = new Vector3((float)r.NextDouble() * 2 - 1, (float)(10f * r.NextDouble()), (float)r.NextDouble() * 2 - 1);
+            vel = new Vector3((float)r.NextDouble() * 2 - 1, (float)(8f * r.NextDouble()), (float)r.NextDouble() * 2 - 1);
             float massa = 1;
             ClsParticulaDust novaParticula = new ClsParticulaDust(device, pos, vel, massa);
 
@@ -91,10 +84,11 @@ namespace IP3D
             List<Vector3> acc = new List<Vector3>();
             List<Vector3> f = new List<Vector3>();
             acc.Add(new Vector3(0, -9.8f, 0));
+            
 
             for (int i = particulas.Count - 1; i > 0; i--)
             {
-                if (tank.move == false)
+                if (particulas[i].timer > 2 || particulas[i].pos.Y < 0)
                     particulas.RemoveAt(i);
                 else
                     particulas[i].Update(gametime, f, acc);

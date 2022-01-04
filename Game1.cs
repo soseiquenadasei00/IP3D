@@ -16,6 +16,7 @@ namespace IP3D
         private SystemParticula systemparticula;
         private ClsTerreno terreno;
         private CameraManager cameraManager;
+        private SystemParticulaDust dust;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -86,6 +87,7 @@ namespace IP3D
             tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
             tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
 
             base.Draw(gameTime);
         }
