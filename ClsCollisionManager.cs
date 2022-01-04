@@ -7,48 +7,51 @@ using System.Collections.Generic;
 
 namespace IP3D {
 
-    public class ClsCollisionManager {
+    public class ClsCollisionManager{
+
         public static ClsCollisionManager instance;
+        public ClsTank tank;
+        public ClsTankBoid tankboid;
+        public List<ClsBullet> bullets;
 
-        public List<ClsGameObject> objects;
-
-        public ClsCollisionManager(){
-            instance = this;
-            objects = new List<ClsGameObject>();
-        }
-
-
-        public List<ClsGameObject> IsColliding(ClsCircleCollider collider) {
-            List<ClsGameObject> collisionList = new List<ClsGameObject>();
-            foreach(ClsGameObject go in objects) {
-                if (Vector3.Distance(collider.center, go.position) < collider.radius + go.collider.radius) {
-                    collisionList.Add(go);
-                }
-            }
-            return collisionList;
-        }
-
-        public ClsGameObject ReturnCollidedObject(ClsCircleCollider collider)
+        public ClsCollisionManager()
         {
-            foreach (ClsGameObject go in objects)
-            {
-                if (Vector3.Distance(collider.center, go.position) < collider.radius + go.collider.radius) return go;                
-            }
-            return null;
+            instance = this;
+            instance.tank = tank;
+            instance.tankboid = tankboid;
+            bullets = new List<ClsBullet>();
         }
 
-        public bool CheckFutureCollision(ClsCircleCollider collider, Vector3 position){
-            foreach(ClsGameObject go in objects) {
-                if (Vector3.Distance(position, go.position)  < collider.radius + go.collider.radius 
-                    && go.name != collider.gameObject.name  &&
-                    go.layer == ClsGameObject.Layer.blockable) return true;
+        public bool CheckTankCollision() => 
+            Vector3.Distance(tank.position, tankboid.position) <= tank.collider.radius + tankboid.collider.radius;
+
+        //backup method to unstuck tanks
+        public bool MovingAway(Vector3 futureposition) =>
+            Vector3.Distance(tank.collider.center, tankboid.collider.center) < Vector3.Distance(futureposition, tankboid.collider.center);
+
+        public bool CheckBulletCollision()
+        {
+            foreach (ClsBullet bullet in bullets) {
+                Vector3 bulletToTankAnterior = tankboid.position - bullet.lastPosition;
+                Vector3 bulletToTankSeguinte = tankboid.position - bullet.position;
+                float dotAnterior = Vector3.Dot(bullet.velocity, bulletToTankAnterior);
+                float dotSeguinte = Vector3.Dot(bullet.velocity, bulletToTankSeguinte);
+                if (dotAnterior > 0 && dotSeguinte < 0)   //houve interseção com a projeção do tanque na linha
+                {
+                    float lastPosToTank = MathF.Abs(Vector3.Distance(bullet.lastPosition, tankboid.position)); // b
+                    float posToTank = MathF.Abs(Vector3.Distance(bullet.position, tankboid.position)); //a 
+                    float lastPosToPos = MathF.Abs(Vector3.Distance(bullet.lastPosition, bullet.position)); //c
+                    float sp = (posToTank + lastPosToTank + lastPosToPos) / 2;
+                    float area = MathF.Sqrt(sp * (sp - posToTank) * (sp - lastPosToTank) * (sp - lastPosToPos));
+                    float distance = 2 * area / lastPosToPos;
+                    return distance < tankboid.collider.radius;
+                }
             }
             return false;
         }
 
 
+
     }
-
-
 
 }

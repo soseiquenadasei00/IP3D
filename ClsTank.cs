@@ -6,7 +6,10 @@ using Microsoft.Xna.Framework.Input;
 
 namespace IP3D
 {
-    class ClsTank  : ClsGameObject{
+    public class ClsTank {
+
+        public ClsCircleCollider collider;
+        public Vector3 position;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -21,6 +24,8 @@ namespace IP3D
         private Game1 game;
         //structure
         private Model tankModel;
+        private Matrix scale;
+        
         private ModelBone turretBone, cannonBone, leftBackWheelBone, rightBackWheelBone, leftFrontWheelBone,
                           rightFrontWheelBone, leftSteerBone, rightSteerBone, hatchBone;
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
@@ -32,22 +37,26 @@ namespace IP3D
         private float wheelRotationAngle = 0;
         private float wheelRotationSpeed = 0;
 
-        private List<ClsBullet> bullets = new List<ClsBullet>();
+        private List<ClsBullet> bullets;
         private int cannonPower = 100000;
         private GraphicsDevice device;
         private float reloadTime = 2.0f;
         private float lastShotTime;
         private bool canFire;
+        
 
 
-        public ClsTank(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name) : base(position, scale, Layer.blockable, radius, name){
+        public ClsTank(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name){
             this.scale     = scale;
             this.tankModel = model;
             this.terreno   = terreno;
             this.position  = position;
-            this.name      = name;
             this.game      = game1;
             this.device    = device;
+            this.bullets   = ClsCollisionManager.instance.bullets;
+            collider = new ClsCircleCollider(position, radius);
+            ClsCollisionManager.instance.tank = this;
+
             leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
             rightBackWheelBone  = tankModel.Bones["r_back_wheel_geo"];
 
@@ -164,12 +173,12 @@ namespace IP3D
             rotacao.Right = right;
 
             //collision
-            if (!ClsCollisionManager.instance.CheckFutureCollision(this.collider, futurePosition))
+            if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
             {
                 position = futurePosition;
             }
             position.Y = terreno.GetHeight(position.X, position.Z);
-
+            collider.center = position;
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
@@ -194,7 +203,8 @@ namespace IP3D
                         || bullets[i].position.Z <= 0
                         || bullets[i].position.X >= terreno.width - 1
                         || bullets[i].position.Z >= terreno.height - 1
-                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y) bullets.RemoveAt(i);
+                        || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y
+                        || bullets[i].collided) bullets.RemoveAt(i);
 
                 }
             }
@@ -207,7 +217,7 @@ namespace IP3D
         {
             Vector3 posCanhaoLocal = Vector3.Zero;
             Vector3 posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
-            ClsBullet newBullet = new ClsBullet(device, this, posCanhaoMundo, cannonPower);
+            ClsBullet newBullet = new ClsBullet(device, posCanhaoMundo, cannonPower);
             bullets.Add(newBullet);
             Vector3 dirCanhaoMundo = boneTransforms[10].Backward;
             dirCanhaoMundo.Normalize();

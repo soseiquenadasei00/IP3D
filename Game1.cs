@@ -15,8 +15,7 @@ namespace IP3D
         private SpriteBatch _spriteBatch;
         private SystemParticula systemparticula;
         private ClsTerreno terreno;
-        private CameraLivre camera;
-        private SystemParticulaDust dust;
+        private CameraManager cameraManager;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -49,16 +48,19 @@ namespace IP3D
 
         protected override void LoadContent()
         {
-            
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             collisionManager = new ClsCollisionManager();
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
-            camera = new CameraLivre(_graphics.GraphicsDevice, terreno);
+
+            cameraManager = new CameraManager(_graphics.GraphicsDevice, terreno);
+       
             tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, 
                 new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
+
             tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, 
                 new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
+
             systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
             dust = new SystemParticulaDust(_graphics.GraphicsDevice, tank1,terreno);
             
@@ -68,9 +70,9 @@ namespace IP3D
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-
+   
             systemparticula.Update(gameTime);
-            camera.Update();
+            cameraManager.Update();
             tankboid.Update(gameTime);
             tank1.Update(gameTime, control1);
             dust.Update(gameTime);
@@ -80,11 +82,10 @@ namespace IP3D
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            terreno.Draw(_graphics.GraphicsDevice,camera.view,camera.projection);
-            tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
-            systemparticula.Draw(_graphics.GraphicsDevice, camera.projection, camera.view);
-            tankboid.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
-            dust.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
+            terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
+            tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
 
             base.Draw(gameTime);
         }
