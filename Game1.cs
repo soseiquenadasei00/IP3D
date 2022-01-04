@@ -16,6 +16,7 @@ namespace IP3D
         private SystemParticula systemparticula;
         private ClsTerreno terreno;
         private CameraLivre camera;
+        private SystemParticulaDust dust;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -59,6 +60,8 @@ namespace IP3D
             tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, 
                 new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
             systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
+            dust = new SystemParticulaDust(_graphics.GraphicsDevice, tank1,terreno);
+            
         }
 
         protected override void Update(GameTime gameTime)
@@ -70,6 +73,7 @@ namespace IP3D
             camera.Update();
             tankboid.Update(gameTime);
             tank1.Update(gameTime, control1);
+            dust.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -80,6 +84,7 @@ namespace IP3D
             tank1.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, camera.projection, camera.view);
             tankboid.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
+            dust.Draw(_graphics.GraphicsDevice, camera.view, camera.projection);
 
             base.Draw(gameTime);
         }
