@@ -63,7 +63,7 @@ namespace IP3D
                 new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
 
             systemparticula = new ClsSystemParticula(_graphics.GraphicsDevice,terreno);
-
+            dust = new SystemParticulaDust(_graphics.GraphicsDevice, tank1, terreno);
             cameraManager = new CameraManager(_graphics.GraphicsDevice, terreno, tank1);
         }
 
@@ -73,7 +73,9 @@ namespace IP3D
                 Exit(); 
             tank1.Update(gameTime, control1);
             cameraManager.Update(tank1.dirCanhaoMundo, tank1.posCanhaoMundo);
+            if (cameraManager.actual == CameraManager.CameraActual.mira) tank1.isOnCameraAim = true;
             systemparticula.Update(gameTime);
+            dust.Update(gameTime);
             tankboid.Update(gameTime);
             tank1.Update(gameTime, control1);
             dust.Update(gameTime);
@@ -83,20 +85,14 @@ namespace IP3D
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            if (cameraManager.actual != CameraManager.CameraActual.mira)
-            {
-                tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-                terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-                systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
-                tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            }
-            else if (cameraManager.actual == CameraManager.CameraActual.mira)
-            {
-                terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-                systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
-                tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            }
-
+           
+            tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
+            tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+          
+           
             base.Draw(gameTime);
         }
     }

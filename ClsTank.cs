@@ -13,6 +13,8 @@ namespace IP3D
         public Vector3 dirCanhaoMundo;
         public Vector3 direcaoCorreta;
         public Vector3 posCanhaoMundo;
+        public Vector3 direcao;
+        public bool isOnCameraAim = false;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -93,7 +95,7 @@ namespace IP3D
             KeyboardState state = Keyboard.GetState();
             actual = tankState.stop;
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
-            Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
+            direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
             normal.Normalize();
@@ -241,19 +243,21 @@ namespace IP3D
         
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
-            foreach (ModelMesh mesh in tankModel.Meshes)
+            if (!isOnCameraAim)
             {
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (ModelMesh mesh in tankModel.Meshes)
                 {
-                    effect.World = boneTransforms[mesh.ParentBone.Index];
-                    effect.View = view;
-                    effect.Projection = projection;
-                    effect.EnableDefaultLighting();
+                    foreach (BasicEffect effect in mesh.Effects)
+                    {
+                        effect.World = boneTransforms[mesh.ParentBone.Index];
+                        effect.View = view;
+                        effect.Projection = projection;
+                        effect.EnableDefaultLighting();
+                    }
+                    // Draw each mesh of the model
+                    mesh.Draw();
                 }
-                // Draw each mesh of the model
-                mesh.Draw();
             }
-
 
             foreach (ClsBullet bullet in bullets)
             {
