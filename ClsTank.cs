@@ -10,6 +10,9 @@ namespace IP3D
 
         public ClsCircleCollider collider;
         public Vector3 position;
+        public Vector3 dirCanhaoMundo;
+        public Vector3 direcaoCorreta;
+        public Vector3 posCanhaoMundo;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -56,8 +59,10 @@ namespace IP3D
             this.bullets   = ClsCollisionManager.instance.bullets;
             collider = new ClsCircleCollider(position, radius);
             ClsCollisionManager.instance.tank = this;
+            dirCanhaoMundo = Vector3.Zero;
+            direcaoCorreta = Vector3.Zero;
 
-            leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
+        leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
             rightBackWheelBone  = tankModel.Bones["r_back_wheel_geo"];
 
             leftFrontWheelBone  = tankModel.Bones["l_front_wheel_geo"];
@@ -91,7 +96,7 @@ namespace IP3D
             normal.Normalize();
             Vector3 right = Vector3.Cross(direcao, normal);
             right.Normalize();
-            Vector3 direcaoCorreta = Vector3.Cross(normal, right);
+            direcaoCorreta = Vector3.Cross(normal, right);
             direcaoCorreta.Normalize();
 
             #region Cannon/TowerControl
@@ -183,11 +188,14 @@ namespace IP3D
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
 
+            dirCanhaoMundo = boneTransforms[10].Backward;
+            Vector3 posCanhaoLocal = Vector3.Zero;
+            posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
             #region Bullets
             //fire
             if (canFire && state.IsKeyDown(controls[8]))
             {
-                Fire(direcaoCorreta);
+                Fire();
                 canFire = false;
                 lastShotTime = (float)gameTime.TotalGameTime.TotalSeconds;
             }
@@ -213,13 +221,10 @@ namespace IP3D
             #endregion
         }
 
-        public void Fire(Vector3 direcaoCorreta)
+        public void Fire()
         {
-            Vector3 posCanhaoLocal = Vector3.Zero;
-            Vector3 posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
             ClsBullet newBullet = new ClsBullet(device, posCanhaoMundo, cannonPower);
             bullets.Add(newBullet);
-            Vector3 dirCanhaoMundo = boneTransforms[10].Backward;
             dirCanhaoMundo.Normalize();
             newBullet.Fire(dirCanhaoMundo);
            

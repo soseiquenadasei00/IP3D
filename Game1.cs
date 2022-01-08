@@ -13,7 +13,7 @@ namespace IP3D
         private ClsCollisionManager collisionManager;
 
         private SpriteBatch _spriteBatch;
-        private SystemParticula systemparticula;
+        private ClsSystemParticula systemparticula;
         private ClsTerreno terreno;
         private CameraManager cameraManager;
 
@@ -53,7 +53,7 @@ namespace IP3D
 
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
 
-            cameraManager = new CameraManager(_graphics.GraphicsDevice, terreno);
+            
        
             tank1 = new ClsTank(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank\tank"), terreno, 
                 new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
@@ -61,28 +61,39 @@ namespace IP3D
             tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, 
                 new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
 
-            systemparticula = new SystemParticula(_graphics.GraphicsDevice,terreno);
+            systemparticula = new ClsSystemParticula(_graphics.GraphicsDevice,terreno);
+
+            cameraManager = new CameraManager(_graphics.GraphicsDevice, terreno, tank1);
         }
 
         protected override void Update(GameTime gameTime)
         {
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-                Exit();
-   
-            systemparticula.Update(gameTime);
-            cameraManager.Update();
-            tankboid.Update(gameTime);
+                Exit(); 
             tank1.Update(gameTime, control1);
+            cameraManager.Update(tank1.dirCanhaoMundo, tank1.posCanhaoMundo);
+            systemparticula.Update(gameTime);
+            tankboid.Update(gameTime);
+            
             base.Update(gameTime);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-            terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
-            tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            if (cameraManager.actual != CameraManager.CameraActual.mira)
+            {
+                tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
+                tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            }
+            else if (cameraManager.actual == CameraManager.CameraActual.mira)
+            {
+                terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
+                tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            }
 
             base.Draw(gameTime);
         }

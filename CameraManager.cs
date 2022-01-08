@@ -16,20 +16,24 @@ namespace IP3D
         public Matrix projection;
         public CameraLivre cameraLivre;
         public ClsCameraSurfaceFollow cameraSurfaceFollow;
+        public ClsCameraMira cameraMira;
+        public ClsTank playerTank;
         float yaw = 0, pitch = 0;
 
-        public CameraManager(GraphicsDevice device, ClsTerreno terreno)
+        public CameraManager(GraphicsDevice device, ClsTerreno terreno, ClsTank playerTank)
         {
             position = new Vector3(64, 10, 64);
+            this.playerTank = playerTank;
             cameraLivre = new CameraLivre(device, terreno);
             cameraSurfaceFollow = new ClsCameraSurfaceFollow(device, terreno);
+            cameraMira = new ClsCameraMira(device, terreno, playerTank);
             actual = CameraActual.livre;
             view = cameraLivre.view;
             projection = cameraLivre.projection;
 
         }
 
-        public void Update()
+        public void Update(Vector3 bulletDir, Vector3 posCanhaoMundo)
         {
             MouseState ms = Mouse.GetState();
             KeyboardState kb = Keyboard.GetState();
@@ -37,6 +41,11 @@ namespace IP3D
             
             if (Keyboard.GetState().IsKeyDown(Keys.F1)) actual = CameraActual.livre;
             if (Keyboard.GetState().IsKeyDown(Keys.F2)) actual = CameraActual.sf;
+            if (Keyboard.GetState().IsKeyDown(Keys.F3))
+            {
+                actual = CameraActual.mira;
+           
+            }
             switch (actual)
             {
                 case CameraActual.livre:
@@ -52,6 +61,13 @@ namespace IP3D
                     pitch = cameraSurfaceFollow.pitch;
                     projection = cameraSurfaceFollow.projection;
                     view = cameraSurfaceFollow.view;
+                    break;
+                case CameraActual.mira:
+                    position = cameraMira.Update(bulletDir, posCanhaoMundo);
+                    yaw = cameraMira.yaw;
+                    pitch = cameraMira.pitch;
+                    projection = cameraMira.projection;
+                    view = cameraMira.view;
                     break;
                 default:
                     position = cameraLivre.Update(kb, ms, position, yaw, pitch);

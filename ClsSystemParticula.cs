@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace IP3D
 {
-    class SystemParticula
+    class ClsSystemParticula
     {
         
         List<ClsParticula>particulas;
@@ -18,7 +18,7 @@ namespace IP3D
         private ClsTerreno terreno;
 
         // Sistema de particulas, lista de particulas 
-        public SystemParticula(GraphicsDevice device, ClsTerreno terreno)
+        public ClsSystemParticula(GraphicsDevice device, ClsTerreno terreno)
         {
             r = new System.Random(1);
             this.terreno = terreno;
