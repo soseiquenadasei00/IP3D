@@ -17,6 +17,7 @@ namespace IP3D
         private ClsTerreno terreno;
         private CameraManager cameraManager;
         private SystemParticulaDust dust;
+        private Texture2D sight;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -51,7 +52,7 @@ namespace IP3D
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             collisionManager = new ClsCollisionManager();
-
+            sight = Content.Load<Texture2D>("aim");
             terreno = new ClsTerreno(_graphics.GraphicsDevice, Content.Load<Texture2D>("lh3d1"), Content.Load<Texture2D>("grass"));
 
             
@@ -85,14 +86,23 @@ namespace IP3D
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-           
-            tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
-            tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-            dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
-          
-           
+            _spriteBatch.Begin();
+
+
+            if (cameraManager.actual == CameraManager.CameraActual.mira)
+                _spriteBatch.Draw(sight, new Rectangle(new Point(0, 0),
+                    new Point(_graphics.GraphicsDevice.Viewport.Width,
+                    _graphics.GraphicsDevice.Viewport.Height)), Color.White);
+
+
+
+                tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
+                tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+                dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+
+            _spriteBatch.End();
             base.Draw(gameTime);
         }
     }
