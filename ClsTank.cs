@@ -25,14 +25,16 @@ namespace IP3D
         */
         private ClsTerreno terreno;
         private Game1 game;
+        public enum tankState { stop,move}
+        public tankState actual;
         //structure
-        private Model tankModel;
+        public Model tankModel;
         private Matrix scale;
         
-        private ModelBone turretBone, cannonBone, leftBackWheelBone, rightBackWheelBone, leftFrontWheelBone,
+        public ModelBone turretBone, cannonBone, leftBackWheelBone, rightBackWheelBone, leftFrontWheelBone,
                           rightFrontWheelBone, leftSteerBone, rightSteerBone, hatchBone;
         private Matrix leftSteerTranform, rightSteerTranform, cannonTransform, turretTransform;
-        public Matrix[] boneTransforms;
+        public  Matrix[] boneTransforms;
         private float rotTower = 0;
         private float rotCanon = 0;
         private float rotTank = 0;
@@ -56,6 +58,7 @@ namespace IP3D
             this.position  = position;
             this.game      = game1;
             this.device    = device;
+            actual = tankState.stop;
             this.bullets   = ClsCollisionManager.instance.bullets;
             collider = new ClsCircleCollider(position, radius);
             ClsCollisionManager.instance.tank = this;
@@ -88,7 +91,7 @@ namespace IP3D
         public void Update(GameTime gameTime, Keys[] controls){
 
             KeyboardState state = Keyboard.GetState();
-
+            actual = tankState.stop;
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
@@ -141,6 +144,7 @@ namespace IP3D
             {
                 futurePosition += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 wheelRotationSpeed += 10.0f;
+                actual = tankState.move;
             }
             if (wheelRotationSpeed > 10.0f) wheelRotationSpeed = 10.0f;
 
@@ -150,6 +154,7 @@ namespace IP3D
             {
                 futurePosition -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 wheelRotationSpeed -= 10.0f;
+                actual = tankState.move;
             }
             if (wheelRotationSpeed < -10.0f) wheelRotationSpeed = -10.0f;
             if (!(state.IsKeyDown(controls[7]) || state.IsKeyDown(controls[6]))) wheelRotationSpeed = 0.0f;
@@ -181,7 +186,9 @@ namespace IP3D
             if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
             {
                 position = futurePosition;
+                
             }
+            
             position.Y = terreno.GetHeight(position.X, position.Z);
             collider.center = position;
             Matrix translation = Matrix.CreateTranslation(position);
@@ -219,6 +226,8 @@ namespace IP3D
             if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
 
             #endregion
+
+            
         }
 
         public void Fire()

@@ -16,6 +16,7 @@ namespace IP3D
         private ClsSystemParticula systemparticula;
         private ClsTerreno terreno;
         private CameraManager cameraManager;
+        private SystemParticulaDust dust;
 
 
         /* CONTROL ARRAY PASSED AS PARAMETER TO TANK UPDATE METHOD:
@@ -74,7 +75,8 @@ namespace IP3D
             cameraManager.Update(tank1.dirCanhaoMundo, tank1.posCanhaoMundo);
             systemparticula.Update(gameTime);
             tankboid.Update(gameTime);
-            
+            tank1.Update(gameTime, control1);
+            dust.Update(gameTime);
             base.Update(gameTime);
         }
 
