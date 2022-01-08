@@ -61,7 +61,7 @@ namespace IP3D
                 new Vector3(42, 0, 42), Matrix.CreateScale(0.008f), 2.68f, "tank1");
 
             tankboid = new ClsTankBoid(_graphics.GraphicsDevice, this, Content.Load<Model>(@"tank2\tank"), terreno, 
-                new Vector3(69, 0, 69), Matrix.CreateScale(0.008f), 2.68f, "tankboid");
+                new Vector3(29, 0, 39), Matrix.CreateScale(0.008f), 2.68f, "tankboid",tank1);
 
             systemparticula = new ClsSystemParticula(_graphics.GraphicsDevice,terreno);
             dust = new SystemParticulaDust(_graphics.GraphicsDevice, tank1, terreno);

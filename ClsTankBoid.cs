@@ -22,6 +22,7 @@ namespace IP3D
         7 = TANK BACKWARD
         */
         private ClsTerreno terreno;
+        private ClsTank tankP1;
         private Game1 game;
         //structure
         private Model tankModel;
@@ -47,13 +48,14 @@ namespace IP3D
         
 
 
-        public ClsTankBoid(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name) { 
+        public ClsTankBoid(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name,ClsTank tankP1) { 
             this.scale     = scale;
             this.tankModel = model;
             this.terreno   = terreno;
             this.position  = position;
             this.game      = game1;
             this.device    = device;
+            this.tankP1    = tankP1;
             collider = new ClsCircleCollider(position, radius);
             ClsCollisionManager.instance.tankboid = this;
 
@@ -80,9 +82,19 @@ namespace IP3D
 
         public void Update(GameTime gameTime)
         {
+            Vector3 directionBoid = getDirection(tankP1, gameTime);
+            Vector3 futurePositionBoid = position;
+
+
+            futurePositionBoid += directionBoid * 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+
+
+
+
+
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             Vector3 direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
-
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
             normal.Normalize();
             Vector3 right = Vector3.Cross(direcao, normal);
@@ -96,13 +108,20 @@ namespace IP3D
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
 
-            position.Y = terreno.GetHeight(position.X, position.Y);
+            position.Y = terreno.GetHeight(position.X, position.Z);
 
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
+        }
 
-            
+
+        public Vector3 getDirection(ClsTank tankP1, GameTime gameTime)
+        {
+            Vector3 direcaoCorrigida;
+            direcaoCorrigida = tankP1.position - position;
+            direcaoCorrigida.Normalize();
+            return direcaoCorrigida;
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
