@@ -88,19 +88,17 @@ namespace IP3D
             Vector3 directionBoid = getDirection(tankP1, gameTime);
             Vector3 futurePositionBoid = position;
             Vector3 rotationSteer;
-            Vector3 sub = new Vector3(-1f, -1f, -1f);
             
             if(position.X - tankP1.position.X > 8  || position.X - tankP1.position.X < -8)
             futurePositionBoid += directionBoid * 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
             position = futurePositionBoid;
+            
             rotationSteer = futurePositionBoid - direcao;
-            Console.WriteLine(futurePositionBoid);
+           
 
-
-
-
-            Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotationSteer.Z, 0f, 0f);
+            Matrix rotacao = Matrix.CreateFromYawPitchRoll(-rotationSteer.Z, 0f, 0f);
             direcao = Vector3.Transform(Vector3.UnitZ, rotacao);
+            direcao.Normalize();
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
             normal.Normalize();
             Vector3 right = Vector3.Cross(direcao, normal);
@@ -108,17 +106,15 @@ namespace IP3D
             Vector3 direcaoCorreta = Vector3.Cross(normal, right);
             direcaoCorreta.Normalize();
 
-
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
             
 
-            
             position.Y = terreno.GetHeight(position.X, position.Z);
 
             Matrix translation = Matrix.CreateTranslation(position);
-            tankModel.Root.Transform = scale * rotacao * translation;
+            tankModel.Root.Transform = scale * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
@@ -126,7 +122,7 @@ namespace IP3D
         public Vector3 getDirection(ClsTank tankP1, GameTime gameTime)
         {
             Vector3 direcaoCorrigida;
-            direcaoCorrigida = tankP1.position - position;
+            direcaoCorrigida = position - tankP1.position;
             direcaoCorrigida.Normalize();
             return direcaoCorrigida;
         }
