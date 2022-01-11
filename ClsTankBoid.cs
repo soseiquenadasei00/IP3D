@@ -86,17 +86,14 @@ namespace IP3D
         public void Update(GameTime gameTime)
         {
             Vector3 directionBoid = getDirection(tankP1, gameTime);
-            Vector3 futurePositionBoid = position;
+            Vector3 PositionBoid = position;
             Vector3 rotationSteer;
             
             if(position.X - tankP1.position.X > 8  || position.X - tankP1.position.X < -8)
-            futurePositionBoid += directionBoid * 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            position = futurePositionBoid;
-            
-            rotationSteer = futurePositionBoid - direcao;
-           
-
-            Matrix rotacao = Matrix.CreateFromYawPitchRoll(-rotationSteer.Z, 0f, 0f);
+            PositionBoid += directionBoid * 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            position = PositionBoid;
+ 
+            Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             direcao = Vector3.Transform(Vector3.UnitZ, rotacao);
             direcao.Normalize();
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
@@ -122,7 +119,7 @@ namespace IP3D
         public Vector3 getDirection(ClsTank tankP1, GameTime gameTime)
         {
             Vector3 direcaoCorrigida;
-            direcaoCorrigida = position - tankP1.position;
+            direcaoCorrigida = tankP1.position-position;
             direcaoCorrigida.Normalize();
             return direcaoCorrigida;
         }
