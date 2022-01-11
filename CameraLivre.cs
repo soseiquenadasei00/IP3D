@@ -9,29 +9,18 @@ namespace IP3D
 {
     public class CameraLivre
     {
-        private ClsTerreno terreno;
-        public Matrix view, projection;
+        public Matrix view;
         public float yaw, pitch;
         private int screenW, screenH;
-        private float offset = 1f;
         
-        public CameraLivre(GraphicsDevice device, ClsTerreno terreno) 
+        public CameraLivre(GraphicsDevice device) 
         {
             screenW = device.Viewport.Width;
             screenH = device.Viewport.Height;
-            this.terreno = terreno;
-            float aspectRatio = (float)device.Viewport.Width /
-            device.Viewport.Height;
-
-            projection = Matrix.CreatePerspectiveFieldOfView(
-            MathHelper.ToRadians(60f),
-            aspectRatio,
-            0.1f,
-            100.0f);
         }
+
         public Vector3 Update(KeyboardState kb, MouseState ms, Vector3 position, float yaw, float pitch) 
         {
-           
             Mouse.SetPosition(screenW / 2, screenH / 2);
             Vector2 mouseOffSet = ms.Position.ToVector2() - new Vector2(screenW / 2, screenH / 2);
             float radianosPorPixel = MathHelper.ToRadians(0.5f);
@@ -55,7 +44,6 @@ namespace IP3D
             if (kb.IsKeyDown(Keys.NumPad7)) position = position + up * speed;
             if (kb.IsKeyDown(Keys.NumPad1)) position = position - up * speed;
             if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f); // reset position 
-            //if (position.X > 0 & position.X < terreno.width - 1 & position.Z > 0 & position.Z < terreno.height - 1) position.Y = terreno.GetHeight(position.X, position.Z)+offset;
 
             Vector3 target = position + direction;
             view = Matrix.CreateLookAt(position, target, up);

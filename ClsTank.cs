@@ -67,7 +67,7 @@ namespace IP3D
             dirCanhaoMundo = Vector3.Zero;
             direcaoCorreta = Vector3.Zero;
 
-        leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
+            leftBackWheelBone   = tankModel.Bones["l_back_wheel_geo"];
             rightBackWheelBone  = tankModel.Bones["r_back_wheel_geo"];
 
             leftFrontWheelBone  = tankModel.Bones["l_front_wheel_geo"];
