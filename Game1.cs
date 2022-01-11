@@ -73,8 +73,9 @@ namespace IP3D
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit(); 
             tank1.Update(gameTime, control1);
-            cameraManager.Update(tank1.dirCanhaoMundo, tank1.posCanhaoMundo);
+            cameraManager.Update();
             if (cameraManager.actual == CameraManager.CameraActual.mira) tank1.isOnCameraAim = true;
+            else tank1.isOnCameraAim = false;
             systemparticula.Update(gameTime);
             dust.Update(gameTime);
             tankboid.Update(gameTime);
@@ -87,26 +88,13 @@ namespace IP3D
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
-
-
-            if (cameraManager.actual == CameraManager.CameraActual.mira)
-            {
-                _spriteBatch.Begin();
-
-                _spriteBatch.Draw(sight, new Rectangle(new Point(0, 0),
-                        new Point(_graphics.GraphicsDevice.Viewport.Width,
-                        _graphics.GraphicsDevice.Viewport.Height)), Color.White);
-                _spriteBatch.End();
-                GraphicsDevice.DepthStencilState = DepthStencilState.Default;
-            }
-
             tank1.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
             terreno.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
             systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
             tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
             dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
 
-            
+
             base.Draw(gameTime);
         }
     }

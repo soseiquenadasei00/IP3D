@@ -25,17 +25,24 @@ namespace IP3D
         {
             position = new Vector3(64, 10, 64);
             this.playerTank = playerTank;
-            cameraLivre = new CameraLivre(device, terreno);
+
+            cameraLivre = new CameraLivre(device);
             cameraSurfaceFollow = new ClsCameraSurfaceFollow(device, terreno);
-            cameraMira = new ClsCameraMira(device, terreno, playerTank);
-            thirdperson = new ClsCamera3rdPerson(device, terreno, playerTank);
+            cameraMira = new ClsCameraMira(playerTank);
+            thirdperson = new ClsCamera3rdPerson(playerTank, terreno);
+                      
             actual = CameraActual.livre;
             view = cameraLivre.view;
-            projection = cameraLivre.projection;
 
+            float aspectRatio = (float)device.Viewport.Width / device.Viewport.Height;
+            projection = projection = Matrix.CreatePerspectiveFieldOfView(
+                            MathHelper.ToRadians(60f),
+                            aspectRatio,
+                            0.1f,
+                            100.0f);
         }
 
-        public void Update(Vector3 bulletDir, Vector3 posCanhaoMundo)
+        public void Update()
         {
             MouseState ms = Mouse.GetState();
             KeyboardState kb = Keyboard.GetState();
@@ -51,39 +58,31 @@ namespace IP3D
                     position = cameraLivre.Update(kb, ms, position, yaw, pitch);
                     yaw = cameraLivre.yaw;
                     pitch = cameraLivre.pitch;
-                    projection = cameraLivre.projection;
                     view = cameraLivre.view;
                     break;
                 case CameraActual.sf:
                     position = cameraSurfaceFollow.Update(kb, ms, position, yaw, pitch);
                     yaw = cameraSurfaceFollow.yaw;
                     pitch = cameraSurfaceFollow.pitch;
-                    projection = cameraSurfaceFollow.projection;
                     view = cameraSurfaceFollow.view;
                     break;
                 case CameraActual.mira:
-                    position = cameraMira.Update(bulletDir, posCanhaoMundo);
-                    yaw = cameraMira.yaw;
-                    pitch = cameraMira.pitch;
-                    projection = cameraMira.projection;
+                    position = cameraMira.Update();
                     view = cameraMira.view;
                     break;
                 case CameraActual.thirdperson:
-                    position = thirdperson.Update(playerTank.position, playerTank.direcao);
-                    yaw = thirdperson.yaw;
-                    pitch = thirdperson.pitch;
-                    projection = thirdperson.projection;
+                    position = thirdperson.Update();
                     view = thirdperson.view;
                     break;
                 default:
                     position = cameraLivre.Update(kb, ms, position, yaw, pitch);
                     yaw = cameraLivre.yaw;
                     pitch = cameraLivre.pitch;
-                    projection = cameraLivre.projection;
                     view = cameraLivre.view;
                     break;
             }
             
         }
+
     }
 }

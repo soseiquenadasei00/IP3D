@@ -45,6 +45,8 @@ namespace IP3D
         private float lastShotTime;
         private bool canFire;
         Vector3 direcao;
+        Vector3 aSeek;
+        Vector3 velocity;
 
 
 
@@ -83,49 +85,37 @@ namespace IP3D
             boneTransforms = new Matrix[tankModel.Bones.Count];
         }
 
-        public void Update(GameTime gameTime)
-        {
-            Vector3 directionBoid = getDirection(tankP1, gameTime);
-            Vector3 futurePositionBoid = position;
-            Vector3 rotationSteer;
-            
-            if(position.X - tankP1.position.X > 8  || position.X - tankP1.position.X < -8)
-            futurePositionBoid += directionBoid * 2f * (float)gameTime.ElapsedGameTime.TotalSeconds;
-            position = futurePositionBoid;
-            
-            rotationSteer = futurePositionBoid - direcao;
-           
+        public void Update(GameTime gameTime){
+            Vector3 target = tankP1.position - position;
+            target.Normalize();
+            Vector3 vSeek = target * 5.0f;
+            Vector3 steerDirection = vSeek - direcao;
+            steerDirection.Normalize();
+            Vector3 aceleracao = steerDirection * 5.0f;
+            Vector3 vNext = direcao + (aceleracao * (float)gameTime.ElapsedGameTime.TotalSeconds);
+            Vector3 positionNext = position + (vNext * (float)gameTime.ElapsedGameTime.TotalSeconds);
 
-            Matrix rotacao = Matrix.CreateFromYawPitchRoll(-rotationSteer.Z, 0f, 0f);
-            direcao = Vector3.Transform(Vector3.UnitZ, rotacao);
-            direcao.Normalize();
-            Vector3 normal = terreno.GetNormals(position.X, position.Z);
-            normal.Normalize();
-            Vector3 right = Vector3.Cross(direcao, normal);
-            right.Normalize();
-            Vector3 direcaoCorreta = Vector3.Cross(normal, right);
-            direcaoCorreta.Normalize();
+            Matrix rotacao = Matrix.CreateFromYawPitchRoll(vNext.Z, 0f, 0f);
+            position = positionNext;
+            //Vector3 normal = terreno.GetNormals(position.X, position.Z);
+            //normal.Normalize();
+            //Vector3 right = Vector3.Cross(direcao, normal);
+            //right.Normalize();
+            //Vector3 direcaoCorreta = Vector3.Cross(normal, right);
+            //direcaoCorreta.Normalize();
 
-            rotacao.Up = normal;
-            rotacao.Forward = direcaoCorreta;
-            rotacao.Right = right;
+            //rotacao.Up = normal;
+            //rotacao.Forward = target;
+            //rotacao.Right = right;
             
 
             position.Y = terreno.GetHeight(position.X, position.Z);
 
-            Matrix translation = Matrix.CreateTranslation(position);
-            tankModel.Root.Transform = scale * translation;
+            Matrix translation = Matrix.CreateTranslation(positionNext);
+            tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
         }
 
-
-        public Vector3 getDirection(ClsTank tankP1, GameTime gameTime)
-        {
-            Vector3 direcaoCorrigida;
-            direcaoCorrigida = position - tankP1.position;
-            direcaoCorrigida.Normalize();
-            return direcaoCorrigida;
-        }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {
