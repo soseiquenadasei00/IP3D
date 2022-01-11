@@ -48,10 +48,10 @@ namespace IP3D
             Vector3 up;
             up = Vector3.Cross(right, direction);
             float speed = 0.5f;
-            if (kb.IsKeyDown(Keys.J)) position = position - right * speed;
-            if (kb.IsKeyDown(Keys.L)) position = position + right * speed;
-            if (kb.IsKeyDown(Keys.I)) position = position + direction * speed;
-            if (kb.IsKeyDown(Keys.K)) position = position - direction * speed;
+            if (kb.IsKeyDown(Keys.NumPad4)) position = position - right * speed;
+            if (kb.IsKeyDown(Keys.NumPad6)) position = position + right * speed;
+            if (kb.IsKeyDown(Keys.NumPad8)) position = position + direction * speed;
+            if (kb.IsKeyDown(Keys.NumPad2)) position = position - direction * speed;
             if (kb.IsKeyDown(Keys.NumPad7)) position = position + up * speed;
             if (kb.IsKeyDown(Keys.NumPad1)) position = position - up * speed;
             if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f); // reset position 
