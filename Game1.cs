@@ -32,7 +32,7 @@ namespace IP3D
         7 = TANK BACKWARD
         */                        /*TOWER LEFT, TOWER RIGHT, CANNON UP, CANNON DOWN, TANK LEFT, TANK RIGHT, TANK FORWARD, TANK BACKWARD, TANK FIRE*/
         private Keys[] control1 = { Keys.Left,  Keys.Right,  Keys.Up,   Keys.Down,   Keys.A,    Keys.D,     Keys.W,       Keys.S,        Keys.Space };
-        private Keys[] control2 = { Keys.G,     Keys.U,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
+        private Keys[] control2 = { Keys.T,     Keys.U,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
         private ClsTankBoid tankboid;
         public Game1()

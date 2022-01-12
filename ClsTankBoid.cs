@@ -8,10 +8,12 @@ namespace IP3D
 {
     public class ClsTankBoid {
 
+        public enum tankState { stop, move }
+        public tankState actual;
         public Vector3 position;
         public ClsCircleCollider collider;
         public int lifes = 3;
-        private bool automaticBoid;
+        public Vector3 direcao;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
         1 = TOWER RIGHT
@@ -38,21 +40,24 @@ namespace IP3D
         private float rotTank = 0;
         private float yaw;
         private float speed = 2f;
-
+        private bool automaticBoid;
         private float wheelRotationAngle = 0;
         private float wheelRotationSpeed = 0;
 
+        
+        Matrix rotacao = Matrix.Identity;
+        
+
         private List<ClsBullet> bullets = new List<ClsBullet>();
         private GraphicsDevice device;
-
-        public Vector3 direcao;
-        Matrix rotacao = Matrix.Identity;
-        public enum tankState { stop, move }
-        public tankState actual;
-
-
-
-
+        private int cannonPower = 100000;
+        private float reloadTime = 2.0f;
+        private float lastShotTime;
+        private bool canFire;
+        private Vector3 dirCanhaoMundo;
+        private Vector3 posCanhaoLocal;
+        private Vector3 posCanhaoMundo;
+        private Random random = new Random();
 
         public ClsTankBoid(GraphicsDevice device, Game1 game1, Model model, ClsTerreno terreno, Vector3 position, Matrix scale, float radius, string name,ClsTank tankP1) { 
             this.scale     = scale;
@@ -102,6 +107,8 @@ namespace IP3D
                 {
                     position = seek(tankP1, gameTime);
                     actual = tankState.move;
+
+                  
                 }
             }
             
@@ -184,6 +191,37 @@ namespace IP3D
 
                 #endregion
 
+                //fire
+
+                dirCanhaoMundo = boneTransforms[10].Backward;
+                posCanhaoLocal = Vector3.Zero;
+                posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
+
+                if (canFire && state.IsKeyDown(controls[8]))
+                {
+                    Fire();
+                    canFire = false;
+                    lastShotTime = (float)gameTime.TotalGameTime.TotalSeconds;
+                }
+                for (int i = 0; i < bullets.Count; i++)
+                {
+                    if (bullets[i].state != ClsBullet.BulletState.stored)
+                    {
+                        bullets[i].Update(gameTime);
+                    }
+                    if (bullets[i].state == ClsBullet.BulletState.travelling)
+                    {
+                        if (bullets[i].position.X <= 0
+                            || bullets[i].position.Z <= 0
+                            || bullets[i].position.X >= terreno.width - 1
+                            || bullets[i].position.Z >= terreno.height - 1
+                            || terreno.GetHeight(bullets[i].position.X, bullets[i].position.Z) >= bullets[i].position.Y
+                            || bullets[i].collided) bullets.RemoveAt(i);
+
+                    }
+                }
+                if ((float)gameTime.TotalGameTime.TotalSeconds - lastShotTime > reloadTime) canFire = true;
+
             }
             
             Vector3 normal = terreno.GetNormals(position.X, position.Z);
@@ -203,8 +241,17 @@ namespace IP3D
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
+
         }
 
+        public void Fire()
+        {
+            ClsBullet newBullet = new ClsBullet(device, posCanhaoMundo, cannonPower);
+            bullets.Add(newBullet);
+            dirCanhaoMundo.Normalize();
+            newBullet.Fire(dirCanhaoMundo);
+
+        }
 
         public Vector3 seek(ClsTank tankP1,GameTime gameTime)
         {

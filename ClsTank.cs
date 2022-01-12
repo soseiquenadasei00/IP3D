@@ -188,7 +188,7 @@ namespace IP3D
             //collision
             if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
             {
-                if (futurePosition.X > 128 || futurePosition.X < 0 || futurePosition.Z > 128 || futurePosition.Z < 0) position = futurePosition;
+                if (futurePosition.X < 128 || futurePosition.X > 0 || futurePosition.Z < 128 || futurePosition.Z > 0) position = futurePosition;
             }
             
             position.Y = terreno.GetHeight(position.X, position.Z);
@@ -196,11 +196,11 @@ namespace IP3D
             Matrix translation = Matrix.CreateTranslation(position);
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
-
+            #region Bullets
             dirCanhaoMundo = boneTransforms[10].Backward;
             Vector3 posCanhaoLocal = Vector3.Zero;
             posCanhaoMundo = Vector3.Transform(posCanhaoLocal, boneTransforms[10]);
-            #region Bullets
+            
             //fire
             if (canFire && state.IsKeyDown(controls[8]))
             {
