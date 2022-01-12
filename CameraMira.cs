@@ -13,7 +13,6 @@ namespace IP3D
         public Matrix view;
         public Vector3 position;
 
-        private float offset = 4;
         private ClsTank playerTank;
 
         public ClsCameraMira(ClsTank playerTank) 
@@ -23,12 +22,10 @@ namespace IP3D
 
         public Vector3 Update()
         {
-            position = playerTank.posCanhaoMundo + playerTank.dirCanhaoMundo * offset;
+            position = playerTank.posCanhaoMundo + playerTank.dirCanhaoMundo;
             Vector3 direction = playerTank.dirCanhaoMundo;
-            Vector3 right = Vector3.Cross(playerTank.dirCanhaoMundo, Vector3.UnitY);      
-            Vector3 up = Vector3.Cross(right, direction);
             Vector3 target = position + direction;
-            view = Matrix.CreateLookAt(position, target, up);
+            view = Matrix.CreateLookAt(position, target, playerTank.normal);
             return position;
         }
 

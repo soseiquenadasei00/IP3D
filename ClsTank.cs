@@ -14,6 +14,7 @@ namespace IP3D
         public Vector3 direcaoCorreta;
         public Vector3 posCanhaoMundo;
         public Vector3 direcao;
+        public Vector3 normal;
         public bool isOnCameraAim = false;
         /* CONTROL ARRAY PASSED AS PARAMETER TO UPDATE METHOD:
         0 = TOWER LEFT
@@ -97,7 +98,7 @@ namespace IP3D
             Matrix rotacao = Matrix.CreateFromYawPitchRoll(rotTank, 0f, 0f);
             direcao = Vector3.Transform(-Vector3.UnitZ, rotacao);
 
-            Vector3 normal = terreno.GetNormals(position.X, position.Z);
+            normal = terreno.GetNormals(position.X, position.Z);
             normal.Normalize();
             Vector3 right = Vector3.Cross(direcao, normal);
             right.Normalize();
