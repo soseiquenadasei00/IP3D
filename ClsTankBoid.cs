@@ -236,9 +236,9 @@ namespace IP3D
             rotacao.Right = right;
 
             //collision
-            if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
+            if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.BoidMovingAway(futurePosition))
             {
-                if (futurePosition.X < 128 || futurePosition.X > 0 || futurePosition.Z < 128 || futurePosition.Z > 0) position = futurePosition;
+                if (futurePosition.X < 127 && futurePosition.X > 0 && futurePosition.Z < 127 && futurePosition.Z > 0) position = futurePosition;
             }
 
 
@@ -246,6 +246,7 @@ namespace IP3D
             position.Y = terreno.GetHeight(position.X, position.Z);
 
             Matrix translation = Matrix.CreateTranslation(position);
+            collider.center = position;
             tankModel.Root.Transform = scale * rotacao * translation;
             tankModel.CopyAbsoluteBoneTransformsTo(boneTransforms);
 

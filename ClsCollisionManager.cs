@@ -28,6 +28,8 @@ namespace IP3D {
         //backup method to unstuck tanks
         public bool MovingAway(Vector3 futureposition) =>
             Vector3.Distance(tank.collider.center, tankboid.collider.center) < Vector3.Distance(futureposition, tankboid.collider.center);
+        public bool BoidMovingAway(Vector3 futureposition) =>
+           Vector3.Distance(tank.collider.center, tankboid.collider.center) < Vector3.Distance(futureposition, tank.collider.center);
 
         public bool CheckBulletCollision()
         {
