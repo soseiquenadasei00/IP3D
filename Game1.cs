@@ -17,6 +17,7 @@ namespace IP3D
         private ClsTerreno terreno;
         private CameraManager cameraManager;
         private SystemParticulaDust dust;
+        private SystemParticulaDustBoid dustP2;
         private Texture2D sight;
 
 
@@ -31,7 +32,7 @@ namespace IP3D
         7 = TANK BACKWARD
         */                        /*TOWER LEFT, TOWER RIGHT, CANNON UP, CANNON DOWN, TANK LEFT, TANK RIGHT, TANK FORWARD, TANK BACKWARD, TANK FIRE*/
         private Keys[] control1 = { Keys.Left,  Keys.Right,  Keys.Up,   Keys.Down,   Keys.A,    Keys.D,     Keys.W,       Keys.S,        Keys.Space };
-        private Keys[] control2 = { Keys.U,     Keys.O,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
+        private Keys[] control2 = { Keys.G,     Keys.U,      Keys.Y,    Keys.H,      Keys.J,    Keys.L,     Keys.I,       Keys.K,        Keys.RightControl };
         private ClsTank tank1;
         private ClsTankBoid tankboid;
         public Game1()
@@ -65,6 +66,7 @@ namespace IP3D
 
             systemparticula = new ClsSystemParticula(_graphics.GraphicsDevice,terreno);
             dust = new SystemParticulaDust(_graphics.GraphicsDevice, tank1, terreno);
+            dustP2 = new SystemParticulaDustBoid(_graphics.GraphicsDevice, tankboid, terreno);
             cameraManager = new CameraManager(_graphics.GraphicsDevice, terreno, tank1);
         }
 
@@ -78,9 +80,10 @@ namespace IP3D
             else tank1.isOnCameraAim = false;
             systemparticula.Update(gameTime);
             dust.Update(gameTime);
-            tankboid.Update(gameTime);
+            tankboid.Update(gameTime,control2);
             tank1.Update(gameTime, control1);
             dust.Update(gameTime);
+            dustP2.Update(gameTime);
             base.Update(gameTime);
         }
 
@@ -93,6 +96,7 @@ namespace IP3D
             systemparticula.Draw(_graphics.GraphicsDevice, cameraManager.projection, cameraManager.view);
             tankboid.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
             dust.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
+            dustP2.Draw(_graphics.GraphicsDevice, cameraManager.view, cameraManager.projection);
 
 
             base.Draw(gameTime);

@@ -41,6 +41,7 @@ namespace IP3D
             vel = vel + a * (float)gameTime.ElapsedGameTime.TotalSeconds;
             pos = pos + vel * (float)gameTime.ElapsedGameTime.TotalSeconds;
             sphere.Update(pos);
+            
         }
 
         public void draw(GraphicsDevice device, Matrix view, Matrix projection) 

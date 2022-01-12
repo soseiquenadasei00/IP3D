@@ -51,7 +51,7 @@ namespace IP3D
             if (kb.IsKeyDown(Keys.NumPad2)) position = position - direction * speed;
             if (kb.IsKeyDown(Keys.NumPad7)) position = position + up * speed;
             if (kb.IsKeyDown(Keys.NumPad1)) position = position - up * speed;
-            if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f); // reset position 
+            
             if (position.X > 0 && position.X < terreno.width - 1 && position.Z > 0 && position.Z < terreno.height - 1) position.Y = terreno.GetHeight(position.X, position.Z)+offset;
 
             Vector3 target = position + direction;
