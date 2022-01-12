@@ -95,7 +95,7 @@ namespace IP3D
 
         public void Update(GameTime gameTime, Keys[] controls)
         {
-
+            Vector3 futurePosition = position;
             KeyboardState state = Keyboard.GetState();
             actual = tankState.stop;
             if (Keyboard.GetState().IsKeyDown(Keys.O)) automaticBoid = true;
@@ -105,7 +105,7 @@ namespace IP3D
             {
                 if (position.X - tankP1.position.X > 8 || position.X - tankP1.position.X < -8 || position.Z - tankP1.position.Z > 8 || position.Z - tankP1.position.Z < -8)
                 {
-                    position = seek(tankP1, gameTime);
+                    futurePosition = seek(tankP1, gameTime);
                     actual = tankState.move;
 
                   
@@ -152,11 +152,11 @@ namespace IP3D
                 else if (wheelRotationAngle < 0) wheelRotationAngle += 1 * (float)gameTime.ElapsedGameTime.TotalSeconds;
                 if (wheelRotationAngle < -0.45f) wheelRotationAngle = -0.45f;
 
-                
+                futurePosition = position;
                 //forward
                 if (state.IsKeyDown(controls[6]))
                 {
-                    position += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    futurePosition += -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     wheelRotationSpeed += 10.0f;
                     actual = tankState.move;
                 }
@@ -166,7 +166,7 @@ namespace IP3D
                 //backward
                 if (state.IsKeyDown(controls[7]))
                 {
-                    position -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
+                    futurePosition -= -direcao * 5f * (float)gameTime.ElapsedGameTime.TotalSeconds;
                     wheelRotationSpeed -= 10.0f;
                     actual = tankState.move;
                 }
@@ -234,7 +234,14 @@ namespace IP3D
             rotacao.Up = normal;
             rotacao.Forward = direcaoCorreta;
             rotacao.Right = right;
-            
+
+            //collision
+            if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
+            {
+                if (futurePosition.X < 128 || futurePosition.X > 0 || futurePosition.Z < 128 || futurePosition.Z > 0) position = futurePosition;
+            }
+
+
 
             position.Y = terreno.GetHeight(position.X, position.Z);
 
