@@ -188,8 +188,7 @@ namespace IP3D
             //collision
             if (!ClsCollisionManager.instance.CheckTankCollision() || ClsCollisionManager.instance.MovingAway(futurePosition))
             {
-                position = futurePosition;
-                
+                if (futurePosition.X > 128 || futurePosition.X < 0 || futurePosition.Z > 128 || futurePosition.Z < 0) position = futurePosition;
             }
             
             position.Y = terreno.GetHeight(position.X, position.Z);
