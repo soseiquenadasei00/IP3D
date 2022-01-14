@@ -11,17 +11,19 @@ namespace IP3D
         //references
         public enum BulletState { fired, stored, travelling }
         public BulletState state;
-        public Vector3 lastPosition;
+        
         public float radius;
+        public bool collided = false;
+        public Vector3 lastPosition;
         public Vector3 direction;
         public Vector3 position;
         public Vector3 velocity;
-        public bool collided = false;
+
 
         //physics
+        private int massa = 45;
         private float impulsoInicial;
         private Vector3 forcaInicial;        
-        private int massa = 45;
         private ClsSphere sphere;
         
         public ClsBullet(GraphicsDevice device, Vector3 position, float impulsoInicial) { 
@@ -61,7 +63,6 @@ namespace IP3D
             direction.Normalize();
             this.forcaInicial = impulsoInicial * direction;
         }
-
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)
         {

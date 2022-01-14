@@ -9,9 +9,9 @@ namespace IP3D
 {
     class ClsParticulaDust
     {
-        public Vector3 pos, vel;
-        float massa;
         ClsSphere sphere;
+        public Vector3 pos, vel;
+        public float massa;
         public float timer = 0;
        
         public ClsParticulaDust(GraphicsDevice device,Vector3 pos, Vector3 vel,float massa) // Posição inicial e velocidade inicial 
@@ -43,7 +43,6 @@ namespace IP3D
             sphere.Update(pos);
             
         }
-
         public void draw(GraphicsDevice device, Matrix view, Matrix projection) 
         {
             sphere.Draw(device, view, projection);

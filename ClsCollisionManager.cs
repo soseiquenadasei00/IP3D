@@ -51,9 +51,5 @@ namespace IP3D {
             }
             return false;
         }
-
-
-
     }
-
 }

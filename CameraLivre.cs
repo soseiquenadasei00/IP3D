@@ -43,7 +43,7 @@ namespace IP3D
             if (kb.IsKeyDown(Keys.NumPad2)) position = position - direction * speed;
             if (kb.IsKeyDown(Keys.NumPad7)) position = position + up * speed;
             if (kb.IsKeyDown(Keys.NumPad1)) position = position - up * speed;
-            if (kb.IsKeyDown(Keys.G)) position = new Vector3(64f, 20f, 64f); // reset position 
+            
 
             Vector3 target = position + direction;
             view = Matrix.CreateLookAt(position, target, up);

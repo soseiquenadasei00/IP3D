@@ -38,7 +38,6 @@ namespace IP3D
         private float rotCanon = 0;
         private float rotTower = 0;
         private float rotTank = 0;
-        private float yaw;
         private float speed = 2f;
         private bool automaticBoid;
         private float wheelRotationAngle = 0;

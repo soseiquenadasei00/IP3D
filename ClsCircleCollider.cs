@@ -12,7 +12,5 @@ namespace IP3D {
             this.radius = radius;
             this.center = center;
         }
-
-
     }
 }
