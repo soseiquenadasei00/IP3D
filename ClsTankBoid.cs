@@ -103,13 +103,17 @@ namespace IP3D
 
             if (automaticBoid == true)
             {
-                if (position.X - tankP1.position.X > 8 || position.X - tankP1.position.X < -8 || position.Z - tankP1.position.Z > 8 || position.Z - tankP1.position.Z < -8)
+                if (Vector3.Distance(tankP1.position, position) > 20)
                 {
                     futurePosition = seek(tankP1, gameTime);
                     actual = tankState.move;
-
-                  
                 }
+                else if (Vector3.Distance(tankP1.position, position) < 19)
+                {
+                    futurePosition = flee(tankP1, gameTime);
+                    actual = tankState.move;
+                }
+                else actual = tankState.stop;
             }
             
             if (automaticBoid == false)
@@ -273,6 +277,20 @@ namespace IP3D
             
             return pNext;
             
+        }
+
+        public Vector3 flee(ClsTank tankP1, GameTime gameTime)
+        {
+            Vector3 vInical, a, vNext, pNext;
+            vInical = Vector3.Normalize(tankP1.position - position) * speed;
+            a = Vector3.Normalize(vInical - direcao) * 500f;
+            vNext = direcao + a * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            pNext = position - vNext * (float)gameTime.ElapsedGameTime.TotalSeconds;
+            vNext.Normalize();
+            direcao = vNext;
+
+            return pNext;
+
         }
 
         public void Draw(GraphicsDevice device, Matrix view, Matrix projection)

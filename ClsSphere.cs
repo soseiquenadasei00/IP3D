@@ -6,6 +6,8 @@ using System.Text;
 
 namespace IP3D
 {
+
+    //Para a criação desta classe tivemos ajuda no seguinte link http://thver.blogspot.com/2012/07/how-to-create-sphere-programmatically.html
     public class ClsSphere
     {
         private BasicEffect effect;

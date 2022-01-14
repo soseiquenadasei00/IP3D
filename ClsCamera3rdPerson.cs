@@ -11,7 +11,7 @@ namespace IP3D
         public Matrix view;
         private ClsTank playerTank;
         private ClsTerreno terreno;
-        private float offsetDist = 6f, maxDist = 1.0f;
+        private float offsetDist = 6f;
         private Vector3 offSetHeight = new Vector3(0, 4, 0);
         public ClsCamera3rdPerson(ClsTank playerTank, ClsTerreno terreno)
         {
